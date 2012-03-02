@@ -33,10 +33,10 @@ public class AcousticPositioningActivity extends Activity {
 
 					public void run() {
 						PlaySine();
-					}
-				});
-			}
-		});
+					}// run
+				});// Runnable
+			}// onClick
+		});// OnClickListener
 
 	}// onCreate
 
@@ -59,11 +59,12 @@ public class AcousticPositioningActivity extends Activity {
 		}
 		audioTrack = new SineAudioTrack(sine_hz, sine_seconds);
 		audioTrack.play();
-	}
+	}// PlaySine
 
 	@Override
 	public void onStop() {
 		audioTrack.release();
 		super.onStop();
-	}
+	}// onStop
+
 }// AcousticPositioningActivity
