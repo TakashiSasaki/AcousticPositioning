@@ -6,7 +6,7 @@ import android.media.AudioTrack;
 
 public class SineAudioTrack extends AudioTrack {
 	private int frequency;
-	static final private int SAMPLING_RATE = 44100;
+	static final private int SAMPLING_RATE = 48000;
 	static final private int minBufferSize = AudioTrack.getMinBufferSize(
 			SAMPLING_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 			AudioFormat.ENCODING_PCM_16BIT);
