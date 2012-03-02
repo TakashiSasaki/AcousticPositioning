@@ -3,6 +3,7 @@ package com.gmail.takashi316.acousticpositioning;
 import android.app.Activity;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,7 +28,13 @@ public class AcousticPositioningActivity extends Activity {
 		buttonPlaySine.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				PlaySine();
+				Handler handler = new Handler();
+				handler.post(new Runnable() {
+
+					public void run() {
+						PlaySine();
+					}
+				});
 			}
 		});
 
