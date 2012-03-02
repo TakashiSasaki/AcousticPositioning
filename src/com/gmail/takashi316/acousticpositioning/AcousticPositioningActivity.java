@@ -1,6 +1,7 @@
 package com.gmail.takashi316.acousticpositioning;
 
 import android.app.Activity;
+import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +15,12 @@ public class AcousticPositioningActivity extends Activity {
 	Button buttonPlaySine;
 	EditText editTextSineHz;
 	EditText editTextSineSeconds;
+	EditText editTextRecordingDuration;
+	Button buttonRecord;
+	Button buttonPlayRecordedAudio;
+
 	AudioTrack audioTrack;
+	AudioRecord audioRecord;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -24,6 +30,9 @@ public class AcousticPositioningActivity extends Activity {
 		buttonPlaySine = (Button) findViewById(R.id.buttonPlaySine);
 		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
 		editTextSineSeconds = (EditText) findViewById(R.id.editTextSineSeconds);
+		editTextRecordingDuration = (EditText) findViewById(R.id.editTextRecordingDuration);
+		buttonRecord = (Button) findViewById(R.id.buttonRecord);
+		buttonPlayRecordedAudio = (Button) findViewById(R.id.buttonPlayRecordedAudio);
 
 		buttonPlaySine.setOnClickListener(new OnClickListener() {
 
@@ -37,6 +46,19 @@ public class AcousticPositioningActivity extends Activity {
 				});// Runnable
 			}// onClick
 		});// OnClickListener
+
+		buttonPlayRecordedAudio.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+			}
+		});
+
+		buttonRecord.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				Record();
+			}
+		});
 
 	}// onCreate
 
@@ -67,5 +89,18 @@ public class AcousticPositioningActivity extends Activity {
 		audioTrack.release();
 		super.onStop();
 	}// onStop
+
+	private void Record() {
+		if (audioRecord != null) {
+			if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+				audioRecord.stop();
+				audioRecord.release();
+			} else if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
+				audioRecord.release();
+			}
+			audioRecord = null;
+		}
+		audioRecord = new Record(10);
+	}// Record
 
 }// AcousticPositioningActivity
