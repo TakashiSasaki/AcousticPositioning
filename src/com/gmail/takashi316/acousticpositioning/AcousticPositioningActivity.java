@@ -100,7 +100,7 @@ public class AcousticPositioningActivity extends Activity {
 			}
 			audioRecord = null;
 		}
-		audioRecord = new Record(10);
+		audioRecord = new Record(100);
 	}// Record
 
 }// AcousticPositioningActivity
