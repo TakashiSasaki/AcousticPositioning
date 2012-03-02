@@ -101,6 +101,22 @@ public class AcousticPositioningActivity extends Activity {
 			audioRecord = null;
 		}
 		audioRecord = new Record(100);
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				if (audioRecord == null)
+					return;
+				audioRecord.startRecording();
+				while (audioRecord != null
+						&& audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}// try
+				}// while
+			}// run
+		});// Runnable
+		thread.start();
 	}// Record
 
 }// AcousticPositioningActivity
