@@ -60,13 +60,15 @@ public class SineAudioTrack extends AudioTrack {
 			throw new NullPointerException("audio buffer was already released.");
 	}
 
+	@Override
 	public void release() {
+		super.release();
 		buffer = null;
 	}
 
 	@Override
 	protected void finalize() {
-		buffer = null;
 		super.finalize();
+		buffer = null;
 	}
 }// SineAudioTrack
