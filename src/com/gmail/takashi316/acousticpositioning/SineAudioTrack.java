@@ -22,7 +22,7 @@ public class SineAudioTrack extends AudioTrack {
 		this.frequency = frequency;
 		writeBuffer(buffer);
 		write(buffer, 0, buffer.length);
-	}
+	}// SineAudioTrack
 
 	protected void writeBuffer(byte[] buffer) {
 		for (int i = 0; i < buffer.length; ++i) {
@@ -36,7 +36,7 @@ public class SineAudioTrack extends AudioTrack {
 				buffer[i] = byte_signal;
 			}
 		}// for
-	}
+	}// writeBuffer
 
 	protected void writeBuffer(short[] buffer) {
 		for (int i = 0; i < buffer.length; ++i) {
@@ -50,5 +50,23 @@ public class SineAudioTrack extends AudioTrack {
 				buffer[i] = short_signal;
 			}
 		}// for
+	}// writeBuffer
+
+	@Override
+	public void play() {
+		if (buffer != null)
+			super.play();
+		else
+			throw new NullPointerException("audio buffer was already released.");
 	}
-}
+
+	public void release() {
+		buffer = null;
+	}
+
+	@Override
+	protected void finalize() {
+		buffer = null;
+		super.finalize();
+	}
+}// SineAudioTrack
