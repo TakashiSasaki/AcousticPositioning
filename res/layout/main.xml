@@ -9,4 +9,33 @@
         android:layout_height="wrap_content"
         android:text="@string/hello" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/editTextSineHz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="44100 (Hz)"
+            android:inputType="number" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/editTextSineSeconds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="5 (seconds)"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/buttonPlaySine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play" />
+    </LinearLayout>
+
 </LinearLayout>
