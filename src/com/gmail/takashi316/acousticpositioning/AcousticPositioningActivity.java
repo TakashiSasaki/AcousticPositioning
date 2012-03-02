@@ -63,6 +63,7 @@ public class AcousticPositioningActivity extends Activity {
 
 	@Override
 	public void onStop() {
+		audioTrack.stop();
 		audioTrack.release();
 		super.onStop();
 	}// onStop
