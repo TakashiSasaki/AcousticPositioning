@@ -11,7 +11,7 @@ public class AcousticPositioningActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		audioTrack = new SignAudio(2000,60);
+		audioTrack = new SineAudioTrack(2000,60);
 		audioTrack.play();
 	}
 }

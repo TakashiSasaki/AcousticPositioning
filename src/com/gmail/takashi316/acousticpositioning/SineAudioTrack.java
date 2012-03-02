@@ -4,7 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
-public class SignAudio extends AudioTrack {
+public class SineAudioTrack extends AudioTrack {
 	private int frequency;
 	static final private int SAMPLING_RATE = 44100;
 	static final private int minBufferSize = AudioTrack.getMinBufferSize(
@@ -12,7 +12,7 @@ public class SignAudio extends AudioTrack {
 			AudioFormat.ENCODING_PCM_16BIT);
 	private short[] buffer;
 
-	public SignAudio(int frequency, int seconds) {
+	public SineAudioTrack(int frequency, int seconds) {
 		super(AudioManager.STREAM_MUSIC, SAMPLING_RATE,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, SAMPLING_RATE * seconds,
