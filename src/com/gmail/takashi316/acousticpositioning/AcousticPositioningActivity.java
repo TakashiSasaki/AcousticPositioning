@@ -12,8 +12,8 @@ public class AcousticPositioningActivity extends Activity {
 	private AudioTrack audioTrack;
 	private int minBufferSize = AudioTrack.getMinBufferSize(44100,
 			AudioFormat.CHANNEL_CONFIGURATION_MONO,
-			AudioFormat.ENCODING_PCM_8BIT);
-	private byte[] buffer = new byte[minBufferSize * 100];
+			AudioFormat.ENCODING_PCM_16BIT);
+	private short[] buffer = new short[minBufferSize * 100];
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class AcousticPositioningActivity extends Activity {
 		setContentView(R.layout.main);
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
-				AudioFormat.ENCODING_PCM_8BIT, buffer.length,
+				AudioFormat.ENCODING_PCM_16BIT, buffer.length,
 				AudioTrack.MODE_STATIC);
 		Log.v(new Throwable(), "bufferSize = " + buffer.length);
 

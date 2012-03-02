@@ -24,5 +24,16 @@ public class SignAudio {
 	}
 
 	public void writeBuffer(short[] buffer) {
+		for (int i = 0; i < buffer.length; ++i) {
+			if (i > samplingRate) {
+				buffer[i] = buffer[i - samplingRate];
+			} else {
+				double t = (double) i * (1.0d / (double) samplingRate);
+				double signal = Math.sin(2.0d * Math.PI
+						* (double) this.frequency * t) * 32767.0d;
+				short short_signal = (short) signal;
+				buffer[i] = short_signal;
+			}
+		}// for
 	}
 }
