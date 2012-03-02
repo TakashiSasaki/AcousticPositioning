@@ -11,10 +11,15 @@ public class SignAudio {
 
 	public void writeBuffer(byte[] buffer) {
 		for (int i = 0; i < buffer.length; ++i) {
-			double t = (double) i * (1.0d / (double)samplingRate);
-			double signal = Math.sin(2.0d * Math.PI * (double)this.frequency * t) * 127.0d;
-			byte byte_signal = (byte) signal;
-			buffer[i] = byte_signal;
+			if (i > samplingRate) {
+				buffer[i] = buffer[i - samplingRate];
+			} else {
+				double t = (double) i * (1.0d / (double) samplingRate);
+				double signal = Math.sin(2.0d * Math.PI
+						* (double) this.frequency * t) * 127.0d;
+				byte byte_signal = (byte) signal;
+				buffer[i] = byte_signal;
+			}
 		}// for
 	}
 
