@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 
 public class AcousticPositioningActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -23,7 +22,7 @@ public class AcousticPositioningActivity extends Activity {
 	AudioTrack audioTrack;
 	AudioRecord audioRecord;
 
-	final static private int RECORDING_BUFFER_SIZE_IN_FRAMES = 44100 * 10;
+	final static private int RECORDING_BUFFER_SIZE_IN_FRAMES = 48000 * 10;
 	final static private int TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS = 100;
 	final static private int THREASHOLD_TO_CONTINUE_READING_FRAMES = 100;
 	int recordedFramesMarker = 0;
@@ -67,6 +66,13 @@ public class AcousticPositioningActivity extends Activity {
 			}
 		});
 
+		buttonPlayRecordedAudio.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				Playback();
+			}
+		});
+
 	}// onCreate
 
 	private void PlaySine() {
@@ -101,13 +107,13 @@ public class AcousticPositioningActivity extends Activity {
 		if (audioRecord != null) {
 			if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
 				audioRecord.stop();
-				audioRecord.release();
-			} else if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
+			}
+			if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
 				audioRecord.release();
 			}
-			audioRecord = null;
 		}
-		audioRecord = new Record(100);
+		recordedFramesMarker = 0;
+		audioRecord = new Record();
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				audioRecord.startRecording();
@@ -151,5 +157,16 @@ public class AcousticPositioningActivity extends Activity {
 		});// Runnable
 		thread.start();
 	}// Record
+
+	private void Playback() {
+		if (audioTrack != null) {
+			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+				audioTrack.stop();
+			}
+			audioTrack.release();
+		}
+		audioTrack = new PlaybackAudioTrack(this.recordedFrames);
+		audioTrack.play();
+	}// PlayBack
 
 }// AcousticPositioningActivity
