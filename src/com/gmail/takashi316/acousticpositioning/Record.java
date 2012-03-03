@@ -6,6 +6,7 @@ import android.media.MediaRecorder.AudioSource;
 
 public class Record extends AudioRecord {
 	final static private int SAMPLING_RATE = 48000;
+	final static private int NOTIFICATION_PERIOD_IN_FRAME = SAMPLING_RATE;
 	final static private int MIN_BUFFER_SIZE = AudioRecord.getMinBufferSize(
 			SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
 			AudioFormat.ENCODING_PCM_16BIT);
@@ -17,6 +18,20 @@ public class Record extends AudioRecord {
 		int buffer_size = Math
 				.max(MIN_BUFFER_SIZE * 2, SAMPLING_RATE * seconds);
 		buffer = new short[buffer_size];
+
+		setNotificationMarkerPosition(buffer_size / 4 * 3);
+		setPositionNotificationPeriod(NOTIFICATION_PERIOD_IN_FRAME);
+		setRecordPositionUpdateListener(new OnRecordPositionUpdateListener() {
+
+			public void onPeriodicNotification(AudioRecord recorder) {
+				Log.v(new Throwable(), "periodic notification from recorder");
+			}
+
+			public void onMarkerReached(AudioRecord recorder) {
+				Log.v(new Throwable(), "reached to marker");
+				Record.this.stop();
+			}
+		});
 	}// a constructor
 
 	@Override

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 public class AcousticPositioningActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -21,6 +22,12 @@ public class AcousticPositioningActivity extends Activity {
 
 	AudioTrack audioTrack;
 	AudioRecord audioRecord;
+
+	final static private int RECORDING_BUFFER_SIZE_IN_FRAMES = 44100 * 10;
+	final static private int TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS = 100;
+	final static private int THREASHOLD_TO_CONTINUE_READING_FRAMES = 100;
+	int recordedFramesMarker = 0;
+	short[] recordedFrames = new short[RECORDING_BUFFER_SIZE_IN_FRAMES];
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -103,17 +110,43 @@ public class AcousticPositioningActivity extends Activity {
 		audioRecord = new Record(100);
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
+				audioRecord.startRecording();
 				if (audioRecord == null)
 					return;
 				audioRecord.startRecording();
 				while (audioRecord != null
+						&& audioRecord.getState() == AudioRecord.STATE_INITIALIZED
 						&& audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+					Log.v(new Throwable(), "recording ...");
+					int read_frames = audioRecord.read(recordedFrames,
+							recordedFramesMarker,
+							RECORDING_BUFFER_SIZE_IN_FRAMES
+									- recordedFramesMarker);
+					if (read_frames == AudioRecord.ERROR_INVALID_OPERATION) {
+						Log.v(new Throwable(),
+								"ERROR_INVALID_OPERATION while reading from AudioRecord.");
+						audioRecord.stop();
+						break;
+					}
+					if (read_frames == AudioRecord.ERROR_BAD_VALUE) {
+						Log.v(new Throwable(),
+								"ERROR_BAD_VALUE while reading from AudioRecord.");
+						audioRecord.stop();
+						break;
+					}
+					Log.v(new Throwable(), "" + read_frames + " frames read");
+					recordedFramesMarker += read_frames;
+					if (read_frames > THREASHOLD_TO_CONTINUE_READING_FRAMES)
+						continue;
+					if (recordedFramesMarker >= RECORDING_BUFFER_SIZE_IN_FRAMES)
+						break;
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}// try
 				}// while
+				Log.v(new Throwable(), "finished recording.");
 			}// run
 		});// Runnable
 		thread.start();
