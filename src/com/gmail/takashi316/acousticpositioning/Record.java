@@ -15,7 +15,8 @@ public class Record extends AudioRecord {
 
 	public Record() throws IllegalArgumentException {
 		super(AudioSource.MIC, SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
-				AudioFormat.ENCODING_PCM_16BIT, MIN_BUFFER_SIZE * 4);
+				AudioFormat.ENCODING_PCM_16BIT, Math.max(MIN_BUFFER_SIZE * 4,
+						SAMPLING_RATE * 2 * 2));
 		// int buffer_size = Math
 		// .max(MIN_BUFFER_SIZE * 2, SAMPLING_RATE * seconds);
 		// buffer = new short[buffer_size];
@@ -30,7 +31,6 @@ public class Record extends AudioRecord {
 
 			public void onMarkerReached(AudioRecord recorder) {
 				Log.v(new Throwable(), "reached to marker");
-				Record.this.stop();
 			}
 		});
 	}// a constructor

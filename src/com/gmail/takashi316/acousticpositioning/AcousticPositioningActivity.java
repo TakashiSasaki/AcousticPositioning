@@ -116,13 +116,27 @@ public class AcousticPositioningActivity extends Activity {
 		audioRecord = new Record();
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
+				if(audioRecord == null)return;
 				audioRecord.startRecording();
 				if (audioRecord == null)
 					return;
 				audioRecord.startRecording();
-				while (audioRecord != null
-						&& audioRecord.getState() == AudioRecord.STATE_INITIALIZED
-						&& audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+				try {
+					Log.v(new Throwable(), "waiting for preparation  ...");
+					Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}// try
+				
+				while (true) {
+					if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
+						Log.v(new Throwable(), "AudioRecord is not initialized");
+						break;
+					}
+					if (audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+						Log.v(new Throwable(), "AudioRecord is not recording.");
+						break;
+					}
 					Log.v(new Throwable(), "recording ...");
 					int read_frames = audioRecord.read(recordedFrames,
 							recordedFramesMarker,
@@ -142,11 +156,15 @@ public class AcousticPositioningActivity extends Activity {
 					}
 					Log.v(new Throwable(), "" + read_frames + " frames read");
 					recordedFramesMarker += read_frames;
+					if (recordedFramesMarker >= RECORDING_BUFFER_SIZE_IN_FRAMES) {
+						Log.v(new Throwable(),
+								"reached to RECORDING_BUFFER_SIZE_IN_FRAMES");
+						break;
+					}
 					if (read_frames > THREASHOLD_TO_CONTINUE_READING_FRAMES)
 						continue;
-					if (recordedFramesMarker >= RECORDING_BUFFER_SIZE_IN_FRAMES)
-						break;
 					try {
+						Log.v(new Throwable(), "sleeping ...");
 						Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
