@@ -13,14 +13,14 @@
             android:id="@+id/editTextGetAuthToken"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="auth token" />
 
         <Button
             android:id="@+id/buttonGetAuthToken"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="getAuthToken" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -32,7 +32,8 @@
             android:id="@+id/editTextAccountType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" >
+            android:layout_weight="1"
+            android:hint="account type" >
 
             <requestFocus />
         </EditText>
@@ -42,7 +43,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="invalidate" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -50,13 +50,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
+        <EditText
+            android:id="@+id/editTextAccountName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="account name" />
+
         <Button
             android:id="@+id/buttonRequestFeed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="request feed" />
-
     </LinearLayout>
 
 </LinearLayout>

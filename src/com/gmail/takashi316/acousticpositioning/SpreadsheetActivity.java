@@ -28,14 +28,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class SpreadsheetActivity extends MenuActivity {
-	private EditText editTextGetAuthToken;
+	private EditText editTextAuthToken;
 	private Button buttonGetAuthToken;
 	private EditText editTextAccountType;
 	private Button buttonInvalidate;
 	private Button buttonRequestFeed;
+	private EditText editTextAccountName;
 
 	private String authToken;
 	private String accountType;
+	private String accountName;
 	private AccountManager accountManager;
 	private DocumentListFeed documentListFeed;
 
@@ -52,6 +54,7 @@ public class SpreadsheetActivity extends MenuActivity {
 		}// for
 
 		accountType = accounts[0].type;
+		accountName = accounts[0].name;
 		accountManager.getAuthToken(accounts[0], // ÉeÉXÉgÇ»ÇÃÇ≈å≈íË
 				"writely", // Å¶1
 				null, this, new AccountManagerCallback<Bundle>() {
@@ -86,9 +89,11 @@ public class SpreadsheetActivity extends MenuActivity {
 						Handler handle = new Handler();
 						handle.post(new Runnable() {
 							public void run() {
-								editTextGetAuthToken.setText(authToken);
-							}
-						});
+								editTextAuthToken.setText(authToken);
+								editTextAccountType.setText(accountType);
+								editTextAccountName.setText(accountName);
+							}// run
+						});// Runnable
 
 					}// run
 				}, null);// AccountManagerCallback
@@ -101,6 +106,7 @@ public class SpreadsheetActivity extends MenuActivity {
 		accountManager.invalidateAuthToken(accountType, authToken);
 		accountType = null;
 		authToken = null;
+		accountName = null;
 	}// invalidateAuthToken
 
 	private void requestFeed() {
@@ -121,9 +127,8 @@ public class SpreadsheetActivity extends MenuActivity {
 				.set("openSearch", "http://a9.com/-/spec/opensearch/1.1/")
 				.set("xml", "http://www.w3.org/XML/1998/namespace");
 
-		final MethodOverride method_override = new MethodOverride(); // needed
-																		// for
-																		// PATCH
+		final MethodOverride method_override = new MethodOverride();
+
 		NetHttpTransport net_http_transport = new NetHttpTransport();
 		HttpRequestFactory http_request_factory = net_http_transport
 				.createRequestFactory(new HttpRequestInitializer() {
@@ -180,17 +185,16 @@ public class SpreadsheetActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.spreadsheet);
 
-		editTextGetAuthToken = (EditText) findViewById(R.id.editTextGetAuthToken);
+		editTextAuthToken = (EditText) findViewById(R.id.editTextGetAuthToken);
 		buttonGetAuthToken = (Button) findViewById(R.id.buttonGetAuthToken);
-		editTextAccountType = (EditText) findViewById(R.id.editTextGetAuthToken);
+		editTextAccountType = (EditText) findViewById(R.id.editTextAccountType);
 		buttonInvalidate = (Button) findViewById(R.id.buttonInvalidate);
 		buttonRequestFeed = (Button) findViewById(R.id.buttonRequestFeed);
+		editTextAccountName = (EditText) findViewById(R.id.editTextAccountName);
 
 		buttonGetAuthToken.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				getAuthToken();
-				editTextAccountType.setText(accountType);
-				editTextGetAuthToken.setText(authToken);
 			}// onClick
 		});// OnClickListener
 
@@ -203,9 +207,14 @@ public class SpreadsheetActivity extends MenuActivity {
 					editTextAccountType.setText(accountType);
 				}// if
 				if (authToken == null) {
-					editTextAccountType.setText("null");
+					editTextAuthToken.setText("null");
 				} else {
-					editTextAccountType.setText(authToken);
+					editTextAuthToken.setText(authToken);
+				}// if
+				if (accountName == null) {
+					editTextAccountName.setText("null");
+				} else {
+					editTextAccountName.setText(accountName);
 				}// if
 			}// onClick
 		});// OnClickListener
