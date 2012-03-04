@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 public class MenuActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	@Override
