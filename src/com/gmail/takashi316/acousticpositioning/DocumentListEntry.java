@@ -21,7 +21,7 @@ import com.google.api.client.util.Key;
 /**
  * @author Yaniv Inbar
  */
-public class DocumentListEntry  {
+public class DocumentListEntry {
 
 	@Key("@gd:etag")
 	public String etag;

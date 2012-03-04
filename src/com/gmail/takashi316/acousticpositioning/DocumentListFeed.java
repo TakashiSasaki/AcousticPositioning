@@ -27,9 +27,10 @@ public class DocumentListFeed {
 	@Key("entry")
 	public List<DocumentListEntry> docs = new ArrayList<DocumentListEntry>();
 
-	@Key("openSearch:totalResults")
-	public int totalResults;
+	@Key("@href")
+	public String href;
 
-	@Key("link")
-	public List<DocumentLink> documentLinkList;
+	@Key("@rel")
+	public String rel;
+
 }// DocumentListFeed

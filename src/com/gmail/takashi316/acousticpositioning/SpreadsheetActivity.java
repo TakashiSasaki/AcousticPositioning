@@ -1,27 +1,18 @@
 package com.gmail.takashi316.acousticpositioning;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.xml.transform.stream.StreamResult;
-
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleUrl;
 
 import com.google.api.client.googleapis.MethodOverride;
-import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
 import com.google.api.client.http.HttpExecuteInterceptor;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 import android.accounts.Account;
@@ -35,8 +26,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.AndroidCharacter;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -189,28 +178,6 @@ public class SpreadsheetActivity extends MenuActivity {
 		Log.d("HTTP response status code = " + http_response.getStatusCode());
 		Log.d("HTTP response content type = " + http_response.getContentType());
 
-		InputStream is;
-		try {
-			is = http_response.getContent();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return;
-		}
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		while (true) {
-			String line;
-			try {
-				line = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			}
-			if (line == null)
-				break;
-			Log.v(line);
-		}// while
-
 		try {
 			this.documentListFeed = http_response
 					.parseAs(DocumentListFeed.class);
@@ -219,7 +186,7 @@ public class SpreadsheetActivity extends MenuActivity {
 			return;
 		}
 
-		for (int i = 0; i < this.documentListFeed.totalResults; ++i) {
+		for (int i = 0; i < this.documentListFeed.docs.size(); ++i) {
 			Log.d(this.documentListFeed.docs.get(i).title);
 		}
 	}// requestFeed
