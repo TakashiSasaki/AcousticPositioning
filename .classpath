@@ -4,5 +4,23 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-extensions-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-extensions-android2-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-api-client-extensions-android2-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-android2-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-android2-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-android3-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-http-client-extensions-android3-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-extensions-1.6.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-extensions-1.6.0-beta.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
