@@ -26,11 +26,11 @@ public class Record extends AudioRecord {
 		setRecordPositionUpdateListener(new OnRecordPositionUpdateListener() {
 
 			public void onPeriodicNotification(AudioRecord recorder) {
-				Log.v(new Throwable(), "periodic notification from recorder");
+				Log.v("periodic notification from recorder");
 			}
 
 			public void onMarkerReached(AudioRecord recorder) {
-				Log.v(new Throwable(), "reached to marker");
+				Log.v("reached to marker");
 			}
 		});
 	}// a constructor

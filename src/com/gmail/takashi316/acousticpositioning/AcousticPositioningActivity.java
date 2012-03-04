@@ -130,7 +130,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 					return;
 				audioRecord.startRecording();
 				try {
-					Log.v(new Throwable(), "waiting for preparation  ...");
+					Log.v("waiting for preparation  ...");
 					Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -138,47 +138,44 @@ public class AcousticPositioningActivity extends MenuActivity {
 
 				while (true) {
 					if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
-						Log.v(new Throwable(), "AudioRecord is not initialized");
+						Log.v("AudioRecord is not initialized");
 						break;
 					}
 					if (audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-						Log.v(new Throwable(), "AudioRecord is not recording.");
+						Log.v("AudioRecord is not recording.");
 						break;
 					}
-					Log.v(new Throwable(), "recording ...");
+					Log.v("recording ...");
 					int read_frames = audioRecord.read(recordedFrames,
 							recordedFramesMarker,
 							RECORDING_BUFFER_SIZE_IN_FRAMES
 									- recordedFramesMarker);
 					if (read_frames == AudioRecord.ERROR_INVALID_OPERATION) {
-						Log.v(new Throwable(),
-								"ERROR_INVALID_OPERATION while reading from AudioRecord.");
+						Log.v("ERROR_INVALID_OPERATION while reading from AudioRecord.");
 						audioRecord.stop();
 						break;
 					}
 					if (read_frames == AudioRecord.ERROR_BAD_VALUE) {
-						Log.v(new Throwable(),
-								"ERROR_BAD_VALUE while reading from AudioRecord.");
+						Log.v("ERROR_BAD_VALUE while reading from AudioRecord.");
 						audioRecord.stop();
 						break;
 					}
-					Log.v(new Throwable(), "" + read_frames + " frames read");
+					Log.v("" + read_frames + " frames read");
 					recordedFramesMarker += read_frames;
 					if (recordedFramesMarker >= RECORDING_BUFFER_SIZE_IN_FRAMES) {
-						Log.v(new Throwable(),
-								"reached to RECORDING_BUFFER_SIZE_IN_FRAMES");
+						Log.v("reached to RECORDING_BUFFER_SIZE_IN_FRAMES");
 						break;
 					}
 					if (read_frames > THREASHOLD_TO_CONTINUE_READING_FRAMES)
 						continue;
 					try {
-						Log.v(new Throwable(), "sleeping ...");
+						Log.v("sleeping ...");
 						Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}// try
 				}// while
-				Log.v(new Throwable(), "finished recording.");
+				Log.v("finished recording.");
 			}// run
 		});// Runnable
 		thread.start();

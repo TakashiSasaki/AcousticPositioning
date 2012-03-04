@@ -19,6 +19,9 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +31,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class SpreadsheetActivity extends MenuActivity {
+	final static private int START_ACTIVITY_FOR_RESULT_REQUEST_CODE = 0;
+	final static private int DIALOG_ACCOUNTS = 0;
 	private EditText editTextAuthToken;
 	private Button buttonGetAuthToken;
 	private EditText editTextAccountType;
@@ -45,12 +50,12 @@ public class SpreadsheetActivity extends MenuActivity {
 		accountManager = AccountManager.get(this);
 		Account[] accounts = accountManager.getAccountsByType("com.google");
 		if (accounts.length == 0) {
-			Log.v(new Throwable(), "no accounts in AccountManager");
+			Log.d("no accounts in AccountManager");
 			return;
 		}
 		for (int i = 0; i < accounts.length; i++) {
 			Account account = accounts[i];
-			Log.v(new Throwable(), account.name);
+			Log.d(account.name);
 		}// for
 
 		accountType = accounts[0].type;
@@ -62,37 +67,34 @@ public class SpreadsheetActivity extends MenuActivity {
 						try {
 							Bundle bundle = arg0.getResult();
 							if (bundle.containsKey(AccountManager.KEY_INTENT)) {
-								// 認証が必要な場合
+								// needs to invoke another activity to grant
+								// account.
 								Intent intent = bundle
 										.getParcelable(AccountManager.KEY_INTENT);
 								int flags = intent.getFlags();
 								flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
 								intent.setFlags(flags);
-								startActivityForResult(intent, 0);
-								// 本当はResultを受けとる必要があるけど割愛
+								startActivityForResult(intent,
+										START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
 								return;
 							} else {
-								// 認証用トークン取得
 								authToken = bundle
 										.getString(AccountManager.KEY_AUTHTOKEN);
 							}// if
 						} catch (OperationCanceledException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (AuthenticatorException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
+						}// try
 						runOnUiThread(new Runnable() {
 							public void run() {
 								editTextAuthToken.setText(authToken);
 								editTextAccountType.setText(accountType);
 								editTextAccountName.setText(accountName);
 							}// run
-						});
+						});// runOnUiThread
 
 					}// run
 				}, null);// AccountManagerCallback
@@ -174,7 +176,7 @@ public class SpreadsheetActivity extends MenuActivity {
 		}
 
 		for (int i = 0; i < this.documentListFeed.totalResults; ++i) {
-			Log.v(new Throwable(), this.documentListFeed.docs.get(i).title);
+			Log.d(this.documentListFeed.docs.get(i).title);
 		}
 	}// requestFeed
 
@@ -224,4 +226,40 @@ public class SpreadsheetActivity extends MenuActivity {
 		});// OnClickListener
 	}// onCreate
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case START_ACTIVITY_FOR_RESULT_REQUEST_CODE:
+			if (resultCode == RESULT_OK) {
+				Log.v("account granted");
+			} else {
+				showDialog(DIALOG_ACCOUNTS);
+			}// if
+			break;
+		}// switch
+	}// onActivityResult
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_ACCOUNTS:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Select a Google account");
+			final AccountManager manager = AccountManager.get(this);
+			final Account[] accounts = manager.getAccountsByType("com.google");
+			final int size = accounts.length;
+			String[] names = new String[size];
+			for (int i = 0; i < size; i++) {
+				names[i] = accounts[i].name;
+			}
+			builder.setItems(names, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					Log.v("account " + which + " was selected.");
+				}// onClick
+			});
+			return builder.create();
+		}// switch
+		return null;
+	}// onCreateDialog
 }// SpreadsheetActivity
