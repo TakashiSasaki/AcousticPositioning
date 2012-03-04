@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class AcousticPositioningActivity extends Activity {
+public class AcousticPositioningActivity extends MenuActivity {
 	/** Called when the activity is first created. */
 	Button buttonPlaySine;
 	EditText editTextSineHz;
@@ -98,8 +98,15 @@ public class AcousticPositioningActivity extends Activity {
 
 	@Override
 	public void onStop() {
-		audioTrack.stop();
-		audioTrack.release();
+		if (audioTrack != null) {
+			audioTrack.stop();
+			audioTrack.release();
+		}
+		if (audioRecord != null) {
+			audioRecord.stop();
+			audioRecord.release();
+			super.onStop();
+		}
 		super.onStop();
 	}// onStop
 

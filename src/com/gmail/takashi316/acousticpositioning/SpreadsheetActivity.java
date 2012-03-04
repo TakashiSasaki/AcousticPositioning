@@ -17,11 +17,10 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class SpreadsheetActivity extends Activity {
+public class SpreadsheetActivity extends MenuActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +31,14 @@ public class SpreadsheetActivity extends Activity {
 		AccountManager manager = AccountManager.get(this);
 		Account[] accounts = manager.getAccountsByType("com.google");
 		Bundle bundle = null;
+		if(accounts.length == 0){
+			Log.v(new Throwable(), "no accounts in AccountManager");
+			return;
+		}
+		for(int i=0; i<accounts.length; i++){
+			Account account = accounts[i];
+			Log.v(new Throwable(), account.name);
+		}
 		try {
 			bundle = manager.getAuthToken(accounts[0], // ƒeƒXƒg‚È‚Ì‚ÅŒÅ’è
 					"writely", // ¦1
