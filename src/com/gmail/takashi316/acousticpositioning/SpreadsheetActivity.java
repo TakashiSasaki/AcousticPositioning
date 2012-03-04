@@ -86,14 +86,13 @@ public class SpreadsheetActivity extends MenuActivity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						Handler handle = new Handler();
-						handle.post(new Runnable() {
+						runOnUiThread(new Runnable() {
 							public void run() {
 								editTextAuthToken.setText(authToken);
 								editTextAccountType.setText(accountType);
 								editTextAccountName.setText(accountName);
 							}// run
-						});// Runnable
+						});
 
 					}// run
 				}, null);// AccountManagerCallback
@@ -139,19 +138,18 @@ public class SpreadsheetActivity extends MenuActivity {
 						headers.gdataVersion = "3";
 						request.setHeaders(headers);
 						request.setInterceptor(new HttpExecuteInterceptor() {
-
 							public void intercept(HttpRequest request)
 									throws IOException {
 								method_override.intercept(request);
 								google_access_protected_resource
 										.intercept(request);
-							}
-						});
+							}// intercept
+						});// HttpExecuteIntercept
 						request.addParser(new AtomParser(
 								xml_name_space_dictionary));
 						request.setUnsuccessfulResponseHandler(google_access_protected_resource);
-					}
-				});
+					}// initialize
+				});// HttpRequestInitializer
 
 		HttpRequest http_request;
 		try {
