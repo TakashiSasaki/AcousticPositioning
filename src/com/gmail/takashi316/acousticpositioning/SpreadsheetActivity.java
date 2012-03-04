@@ -15,60 +15,95 @@ import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class SpreadsheetActivity extends MenuActivity {
+	private EditText editTextGetAuthToken;
+	private Button buttonGetAuthToken;
+	private EditText editTextAccountType;
+	private Button buttonInvalidate;
+	private Button buttonRequestFeed;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+	private String authToken;
+	private String accountType;
+	private AccountManager accountManager;
+	private DocumentListFeed documentListFeed;
 
-		// AccountManager を通じてGoogleアカウントを取得
-		AccountManager manager = AccountManager.get(this);
-		Account[] accounts = manager.getAccountsByType("com.google");
-		Bundle bundle = null;
-		if(accounts.length == 0){
+	private void getAuthToken() {
+		accountManager = AccountManager.get(this);
+		Account[] accounts = accountManager.getAccountsByType("com.google");
+		if (accounts.length == 0) {
 			Log.v(new Throwable(), "no accounts in AccountManager");
 			return;
 		}
-		for(int i=0; i<accounts.length; i++){
+		for (int i = 0; i < accounts.length; i++) {
 			Account account = accounts[i];
 			Log.v(new Throwable(), account.name);
-		}
-		try {
-			bundle = manager.getAuthToken(accounts[0], // テストなので固定
-					"writely", // ※1
-					null, this, null, null).getResult();
-		} catch (OperationCanceledException e) {
-			Log.e("", e);
-			return;
-		} catch (AuthenticatorException e) {
-			Log.e("", e);
-			return;
-		} catch (IOException e) {
-			Log.e("", e);
-			return;
-		}
+		}// for
 
-		String authToken = "";
-		if (bundle.containsKey(AccountManager.KEY_INTENT)) {
-			// 認証が必要な場合
-			Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
-			int flags = intent.getFlags();
-			flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
-			intent.setFlags(flags);
-			startActivityForResult(intent, 0);
-			// 本当はResultを受けとる必要があるけど割愛
-			return;
-		} else {
-			// 認証用トークン取得
-			authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-		}
+		accountType = accounts[0].type;
+		accountManager.getAuthToken(accounts[0], // テストなので固定
+				"writely", // ※1
+				null, this, new AccountManagerCallback<Bundle>() {
+					public void run(AccountManagerFuture<Bundle> arg0) {
+						try {
+							Bundle bundle = arg0.getResult();
+							if (bundle.containsKey(AccountManager.KEY_INTENT)) {
+								// 認証が必要な場合
+								Intent intent = bundle
+										.getParcelable(AccountManager.KEY_INTENT);
+								int flags = intent.getFlags();
+								flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
+								intent.setFlags(flags);
+								startActivityForResult(intent, 0);
+								// 本当はResultを受けとる必要があるけど割愛
+								return;
+							} else {
+								// 認証用トークン取得
+								authToken = bundle
+										.getString(AccountManager.KEY_AUTHTOKEN);
+							}// if
+						} catch (OperationCanceledException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (AuthenticatorException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						Handler handle = new Handler();
+						handle.post(new Runnable() {
+							public void run() {
+								editTextGetAuthToken.setText(authToken);
+							}
+						});
 
+					}// run
+				}, null);// AccountManagerCallback
+	}// getAuthToken
+
+	private void invalidateAuthToken() {
+		if (this.authToken == null) {
+			return;
+		}// if
+		accountManager.invalidateAuthToken(accountType, authToken);
+		accountType = null;
+		authToken = null;
+	}// invalidateAuthToken
+
+	private void requestFeed() {
 		final GoogleAccessProtectedResource google_access_protected_resource = new GoogleAccessProtectedResource(
 				authToken);
 		GoogleUrl google_url = new GoogleUrl("https://docs.google.com/feeds");
@@ -127,16 +162,59 @@ public class SpreadsheetActivity extends MenuActivity {
 			e.printStackTrace();
 			return;
 		}
-		DocumentListFeed document_list_feed;
 		try {
-			document_list_feed = http_response.parseAs(DocumentListFeed.class);
+			this.documentListFeed = http_response
+					.parseAs(DocumentListFeed.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		}
 
-		for (int i = 0; i < document_list_feed.totalResults; ++i) {
-			Log.v(new Throwable(), document_list_feed.docs.get(i).title);
+		for (int i = 0; i < this.documentListFeed.totalResults; ++i) {
+			Log.v(new Throwable(), this.documentListFeed.docs.get(i).title);
 		}
+	}// requestFeed
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.spreadsheet);
+
+		editTextGetAuthToken = (EditText) findViewById(R.id.editTextGetAuthToken);
+		buttonGetAuthToken = (Button) findViewById(R.id.buttonGetAuthToken);
+		editTextAccountType = (EditText) findViewById(R.id.editTextGetAuthToken);
+		buttonInvalidate = (Button) findViewById(R.id.buttonInvalidate);
+		buttonRequestFeed = (Button) findViewById(R.id.buttonRequestFeed);
+
+		buttonGetAuthToken.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				getAuthToken();
+				editTextAccountType.setText(accountType);
+				editTextGetAuthToken.setText(authToken);
+			}// onClick
+		});// OnClickListener
+
+		buttonInvalidate.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				invalidateAuthToken();
+				if (accountType == null) {
+					editTextAccountType.setText("null");
+				} else {
+					editTextAccountType.setText(accountType);
+				}// if
+				if (authToken == null) {
+					editTextAccountType.setText("null");
+				} else {
+					editTextAccountType.setText(authToken);
+				}// if
+			}// onClick
+		});// OnClickListener
+
+		buttonRequestFeed.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				requestFeed();
+			}// onClick
+		});// OnClickListener
 	}// onCreate
+
 }// SpreadsheetActivity

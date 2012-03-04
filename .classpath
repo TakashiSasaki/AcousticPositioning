@@ -22,5 +22,7 @@
 	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-1.6.0-beta.jar"/>
 	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-extensions-1.6.0-beta-sources.jar"/>
 	<classpathentry kind="lib" path="google-api-java-client-1.6.0-beta/google-oauth-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="guava-r09-gwt.jar"/>
+	<classpathentry kind="lib" path="guava-r09.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
