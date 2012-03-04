@@ -116,7 +116,8 @@ public class AcousticPositioningActivity extends Activity {
 		audioRecord = new Record();
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-				if(audioRecord == null)return;
+				if (audioRecord == null)
+					return;
 				audioRecord.startRecording();
 				if (audioRecord == null)
 					return;
@@ -127,7 +128,7 @@ public class AcousticPositioningActivity extends Activity {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}// try
-				
+
 				while (true) {
 					if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
 						Log.v(new Throwable(), "AudioRecord is not initialized");
