@@ -274,4 +274,5 @@ public class SpreadsheetActivity extends MenuActivity {
 		}// switch
 		return null;
 	}// onCreateDialog
+	
 }// SpreadsheetActivity
