@@ -2,6 +2,7 @@ package com.gmail.takashi316.acousticpositioning;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import android.media.AudioTrack;
 import android.os.Bundle;
@@ -18,11 +19,12 @@ public class AcousticPositioningActivity extends MenuActivity {
 	EditText editTextRecordingDuration;
 	Button buttonRecord;
 	Button buttonPlayRecordedAudio;
+	EditText editTextMd5;
 
 	AudioTrack audioTrack;
 	Recorder recorder;
 
-	short[] samples;
+	short[] recordedSamples;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 		editTextRecordingDuration = (EditText) findViewById(R.id.editTextRecordingDuration);
 		buttonRecord = (Button) findViewById(R.id.buttonRecord);
 		buttonPlayRecordedAudio = (Button) findViewById(R.id.buttonPlayRecordedAudio);
+		editTextMd5 = (EditText) findViewById(R.id.editTextMd5OfRecordedSamples);
 
 		buttonPlaySine.setOnClickListener(new OnClickListener() {
 
@@ -55,18 +58,30 @@ public class AcousticPositioningActivity extends MenuActivity {
 				try {
 					recorder = new Recorder(new Runnable() {
 						public void run() {
-							samples = recorder.getRecordedFrames();
+							recordedSamples = recorder.getRecordedFrames();
 							Writer writer;
 							try {
 								writer = new Writer();
-								writer.writeToCsv(recorder.getRecordedFrames());
-								writer.writeToWav(recorder.getRecordedFrames());
+								writer.writeToCsv(recordedSamples);
+								writer.writeToWav(recordedSamples);
 							} catch (FileNotFoundException e) {
 								e.printStackTrace();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
-
+							try {
+								final Md5 md5 = new Md5();
+								md5.putBigEndian(recordedSamples);
+								AcousticPositioningActivity.this
+										.runOnUiThread(new Runnable() {
+											public void run() {
+												editTextMd5.setText(md5
+														.getMd5String());
+											}// run
+										});
+							} catch (NoSuchAlgorithmException e) {
+								e.printStackTrace();
+							}
 						}// run
 					});
 				} catch (FileNotFoundException e) {
@@ -129,7 +144,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 			}
 			audioTrack.release();
 		}
-		audioTrack = new MyAudioTrack(samples);
+		audioTrack = new MyAudioTrack(recordedSamples);
 		audioTrack.play();
 	}// PlayBack
 }// AcousticPositioningActivity
