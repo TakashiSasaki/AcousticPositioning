@@ -24,6 +24,10 @@ public class SineAudioTrack extends AudioTrack {
 		write(buffer, 0, buffer.length);
 	}// SineAudioTrack
 
+	public short[] getBuffer() {
+		return buffer;
+	}
+
 	protected void writeBuffer(byte[] buffer) {
 		for (int i = 0; i < buffer.length; ++i) {
 			if (i > SAMPLING_RATE) {
