@@ -1,6 +1,7 @@
 package com.gmail.takashi316.acousticpositioning;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -27,6 +28,19 @@ public class AcousticPositioningActivity extends MenuActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		{
+			SineSamples sine_samples = new SineSamples(1000, 1);
+			Writer writer;
+			try {
+				writer = new Writer();
+				short[] samples = sine_samples.getSamplesInShort();
+				writer.writeToWav(samples);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		buttonPlaySine = (Button) findViewById(R.id.buttonPlaySine);
 		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
