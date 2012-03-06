@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Date;
 
 import android.media.AudioRecord;
@@ -15,7 +16,7 @@ public class Recorder {
 	private Thread thread;
 	private Record record;
 	private int recordedFramesMarker = 0;
-	final static private int RECORDING_BUFFER_SIZE_IN_FRAMES = 48000 * 10;
+	final static private int RECORDING_BUFFER_SIZE_IN_FRAMES = Record.SAMPLING_RATE * 10;
 	final static private int TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS = 100;
 	final static private int THREASHOLD_TO_CONTINUE_READING_FRAMES = 100;
 	short[] recordedFrames;
@@ -99,8 +100,8 @@ public class Recorder {
 			Log.v("finished recording.");
 		}// run
 	}// RecordingThread
-	
-	private void writeToFile() throws IOException {
+
+	private void writeToCsv() throws IOException {
 		File output_file = new File(dataDirectory, "r_" + startDate.getTime()
 				+ ".csv");
 		if (output_file.exists())
@@ -110,15 +111,64 @@ public class Recorder {
 		FileWriter fw = new FileWriter(output_file);
 		BufferedWriter bw = new BufferedWriter(fw);
 		double start_date = (double) startDate.getTime();
-		final double sampling_interval =  1000.0d / 48000.0d;
+		final double sampling_interval = 1000.0d / 48000.0d;
 		for (int i = 0; i < recordedFramesMarker; ++i) {
-			//Log.d("writing offset " + i);
+			// Log.d("writing offset " + i);
 			double offset_in_millisecond = sampling_interval * i;
 			double time = start_date + offset_in_millisecond;
-			bw.write("" + time + "," + recordedFrames[i]+"\r\n");
+			bw.write("" + time + "," + recordedFrames[i] + "\r\n");
 		}// for
 		Log.d("written");
 	}// writeToFile
+
+	private void writeToWav() throws IOException {
+		File wav_file = new File(dataDirectory, "r_" + startDate.getTime()
+				+ ".wav");
+		if (wav_file.exists())
+			throw new IOException(wav_file.getAbsoluteFile()
+					+ " already exists.");
+		Log.d("writing to " + wav_file.getAbsolutePath());
+
+		RandomAccessFile raf = new RandomAccessFile(wav_file, "rw");
+		raf.setLength(0); // Set file length to 0, to prevent
+							// unexpected behavior in case the
+							// file already existed
+		raf.writeBytes("RIFF");
+		raf.writeInt(0); // Final file size not known yet, write 0
+		raf.writeBytes("WAVE");
+		raf.writeBytes("fmt ");
+		raf.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
+		raf.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
+		raf.writeShort(Short.reverseBytes((short) 1));// Number of channels, 1
+														// for mono, 2 for
+														// stereo
+		raf.writeInt(Integer.reverseBytes(Record.SAMPLING_RATE)); // Sample
+																	// rate
+		raf.writeInt(Integer.reverseBytes(Record.SAMPLING_RATE * 16 * 1 / 8)); // Byte
+																				// rate,
+																				// SampleRate*NumberOfChannels*BitsPerSample/8
+		raf.writeShort(Short.reverseBytes((short) (1 * 16 / 8))); // Block
+																	// align,
+																	// NumberOfChannels*BitsPerSample/8
+		raf.writeShort(Short.reverseBytes((short) 16)); // Bits per sample
+		raf.writeBytes("data");
+		raf.writeInt(0); // Data chunk size not known yet, write 0
+
+		byte[] byte_buffer = new byte[recordedFramesMarker * 2];
+		for (int i = 0; i < recordedFramesMarker; ++i) {
+			byte_buffer[i * 2] = (byte) (recordedFrames[i] & 0xff);
+			byte_buffer[i * 2 + 1] = (byte) (recordedFrames[i] >>> 8);
+		}// for
+
+		raf.write(byte_buffer); // Write buffer to file
+
+		raf.seek(4); // Write size to RIFF header
+		raf.writeInt(Integer.reverseBytes(36 + byte_buffer.length));
+
+		raf.seek(40); // Write size to Subchunk2Size field
+		raf.writeInt(Integer.reverseBytes(byte_buffer.length));
+		raf.close();
+	}// writeToWav
 
 	private void stopRecording() {
 		if (thread == null) {
@@ -137,7 +187,8 @@ public class Recorder {
 			Log.v("waiting until the recording thread stops");
 			thread.join();
 			record = null;
-			writeToFile();
+			writeToCsv();
+			writeToWav();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

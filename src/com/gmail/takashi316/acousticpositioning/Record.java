@@ -5,7 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
 
 public class Record extends AudioRecord {
-	final static private int SAMPLING_RATE = 48000;
+	final static public int SAMPLING_RATE = 48000;
 	final static private int NOTIFICATION_PERIOD_IN_FRAME = SAMPLING_RATE;
 	final static public int MIN_BUFFER_SIZE = AudioRecord.getMinBufferSize(
 			SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
