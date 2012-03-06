@@ -1,3 +1,5 @@
+package com.gmail.takashi316.acousticpositioning;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -27,5 +29,6 @@ public class Writer {
 			throw new FileNotFoundException("Can't create "
 					+ dataDirectory.getAbsolutePath());
 		}
-	}//writer
-}
+	}// a constructor
+
+}// Writer
