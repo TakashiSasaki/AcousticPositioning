@@ -16,8 +16,8 @@ public class WhiteNoise {
 	private static String DATA_DIRECTORY_NAME = "AcousticPositioning";
 
 	public static void main(String[] args) {
-		SineAudioTrack sine_audio_track = new SineAudioTrack(1000, 1);
-		short[] short_array = sine_audio_track.getBuffer();
+		SineSamples sine_samples = new SineSamples(1000, 1);
+		short[] short_array = sine_samples.getSamplesInShort();
 		final int size = 32768;
 		double[] double_array = new double[size * 2];
 		for (int i = 0; i < size; ++i) {

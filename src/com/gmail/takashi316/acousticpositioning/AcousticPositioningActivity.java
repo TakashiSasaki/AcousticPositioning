@@ -27,8 +27,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		WhiteNoise.main(null);
 
 		buttonPlaySine = (Button) findViewById(R.id.buttonPlaySine);
 		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
@@ -90,7 +88,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 			}
 			audioTrack.release();
 		}
-		audioTrack = new SineAudioTrack(sine_hz, sine_seconds);
+		SineSamples sine_samples = new SineSamples(sine_hz, sine_seconds);
+		audioTrack = new MyAudioTrack(sine_samples.getSamplesInShort());
 		audioTrack.play();
 	}// PlaySine
 
@@ -115,7 +114,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 			}
 			audioTrack.release();
 		}
-		audioTrack = new PlaybackAudioTrack(Recorder.getTheRecorder()
+		audioTrack = new MyAudioTrack(Recorder.getTheRecorder()
 				.getRecordedFrames());
 		audioTrack.play();
 	}// PlayBack
