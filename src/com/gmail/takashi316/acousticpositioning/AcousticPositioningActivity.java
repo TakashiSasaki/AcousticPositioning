@@ -27,6 +27,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		WhiteNoise.main(null);
 
 		buttonPlaySine = (Button) findViewById(R.id.buttonPlaySine);
 		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
