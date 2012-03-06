@@ -1,18 +1,14 @@
 package com.gmail.takashi316.acousticpositioning;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Date;
 
 import android.media.AudioRecord;
 import android.os.Environment;
 
 public class Recorder {
-	private static Recorder theRecorder;
+//	private static Recorder theRecorder;
 	private Thread thread;
 	private Record record;
 	private int recordedFramesMarker = 0;
@@ -24,15 +20,18 @@ public class Recorder {
 	private File externalStorageDirectory;
 	private File dataDirectory;
 	String DATA_DIRECTORY_NAME = "AcousticPositioning";
+	private Runnable runAfterRecording;
 
-	static public Recorder getTheRecorder() throws FileNotFoundException {
-		if (theRecorder == null) {
-			theRecorder = new Recorder();
-		}
-		return theRecorder;
-	}// getTheRecorder
+	// static public Recorder getTheRecorder() throws FileNotFoundException {
+	// if (theRecorder == null) {
+	// theRecorder = new Recorder();
+	// }
+	// return theRecorder;
+	// }// getTheRecorder
 
-	private Recorder() throws FileNotFoundException {
+	public Recorder(Runnable run_in_ui_thread_after_recording)
+			throws FileNotFoundException {
+		runAfterRecording = run_in_ui_thread_after_recording;
 		externalStorageDirectory = Environment.getExternalStorageDirectory();
 		dataDirectory = new File(externalStorageDirectory, DATA_DIRECTORY_NAME);
 		if (!dataDirectory.exists()) {
@@ -101,7 +100,7 @@ public class Recorder {
 		}// run
 	}// RecordingThread
 
-	private void stopRecording() {
+	public void stopRecording() {
 		if (thread == null) {
 			Log.v("No recorder object.");
 			return;
@@ -118,14 +117,15 @@ public class Recorder {
 			Log.v("waiting until the recording thread stops");
 			thread.join();
 			record = null;
-			Writer writer = new Writer();
-			writer.writeToCsv(recordedFrames, 0, recordedFramesMarker);
-			writer.writeToWav(recordedFrames, 0, recordedFramesMarker);
+//			Writer writer = new Writer();
+//			writer.writeToCsv(recordedFrames, 0, recordedFramesMarker);
+//			writer.writeToWav(recordedFrames, 0, recordedFramesMarker);
+			if (runAfterRecording != null) {
+				runAfterRecording.run();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}// try
+		}
 	}// stopRecording
 
 	synchronized public void startRecording() {

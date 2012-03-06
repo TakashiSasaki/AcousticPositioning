@@ -3,7 +3,6 @@ package com.gmail.takashi316.acousticpositioning;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class AcousticPositioningActivity extends MenuActivity {
-	/** Called when the activity is first created. */
 	Button buttonPlaySine;
 	EditText editTextSineHz;
 	EditText editTextSineSeconds;
@@ -22,7 +20,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 	Button buttonPlayRecordedAudio;
 
 	AudioTrack audioTrack;
-	AudioRecord audioRecord;
+	Recorder recorder;
+
+	short[] samples;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,22 @@ public class AcousticPositioningActivity extends MenuActivity {
 
 			public void onClick(View v) {
 				try {
-					Recorder.getTheRecorder().startRecording();
+					recorder = new Recorder(new Runnable() {
+						public void run() {
+							samples = recorder.getRecordedFrames();
+							Writer writer;
+							try {
+								writer = new Writer();
+								writer.writeToCsv(recorder.getRecordedFrames());
+								writer.writeToWav(recorder.getRecordedFrames());
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+						}// run
+					});
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -100,9 +115,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 			audioTrack.stop();
 			audioTrack.release();
 		}
-		if (audioRecord != null) {
-			audioRecord.stop();
-			audioRecord.release();
+		if (recorder != null) {
+			recorder.stopRecording();
 			super.onStop();
 		}
 		super.onStop();
@@ -115,8 +129,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 			}
 			audioTrack.release();
 		}
-		audioTrack = new MyAudioTrack(Recorder.getTheRecorder()
-				.getRecordedFrames());
+		audioTrack = new MyAudioTrack(samples);
 		audioTrack.play();
 	}// PlayBack
 }// AcousticPositioningActivity
