@@ -149,8 +149,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 	}// onCreate
 
 	private void doRecord() throws FileNotFoundException {
-		editTextMd5OfRecordedSamples.setText("recording ...");
-		recordedDate = new Date();
 		recorder = new Recorder(new Runnable() {
 			public void run() {
 				recordedSamples = recorder.getRecordedFrames();
@@ -163,8 +161,10 @@ public class AcousticPositioningActivity extends MenuActivity {
 						}// try
 					}// run
 				});
-			}// run
-		});
+			}// runOnUiThread
+		});// recorder
+		recordedDate = new Date();
+		editTextMd5OfRecordedSamples.setText("recording ...");
 		recorder.startRecording();
 	}// doRecord
 
@@ -239,15 +239,39 @@ public class AcousticPositioningActivity extends MenuActivity {
 					e.printStackTrace();
 				}// try
 			}// run
-		});// thread
+		});// md5CalculationThread
 		md5CalculatingThread.start();
 	}// RefreshGeneratedSamplesMd5
 
 	private void RefreshRecordedSamplesMd5() throws NoSuchAlgorithmException {
-		Md5 md5 = new Md5();
-		md5.putBigEndian(recordedSamples);
-		editTextMd5OfRecordedSamples.setText(md5.getMd5String());
-	}
+		if (md5CalculatingThread != null && md5CalculatingThread.isAlive()) {
+			editTextMd5OfGeneratedSamples.setText("digest calculator is busy");
+			return;
+		}// if
+		md5CalculatingThread = new Thread(new Runnable() {
+			public void run() {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						editTextMd5OfRecordedSamples
+								.setText("calculating digest ...");
+					}// run
+				});// runOnUiThread
+				try {
+					final Md5 md5 = new Md5();
+					md5.putBigEndian(recordedSamples);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							editTextMd5OfRecordedSamples.setText(md5
+									.getMd5String());
+						}// run
+					});
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}// try
+			}// run
+		});// md5CalculationThread
+		md5CalculatingThread.start();
+	}// refreshRecordedSamplesMd5
 
 	private void PlayGeneratedSamples() throws NullPointerException {
 		if (audioTrack != null) {
