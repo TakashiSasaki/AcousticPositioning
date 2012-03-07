@@ -149,6 +149,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 	}// onCreate
 
 	private void doRecord() throws FileNotFoundException {
+		if (recorder != null)
+			recorder.stopRecording();
 		recorder = new Recorder(new Runnable() {
 			public void run() {
 				recordedSamples = recorder.getRecordedFrames();
@@ -169,6 +171,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 			recorder.startRecording();
 		} catch (IllegalStateException e) {
 			editTextMd5OfRecordedSamples.setText(e.getMessage());
+			recorder.stopRecording();
 		}
 	}// doRecord
 
@@ -313,7 +316,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 		}
 		if (recorder != null) {
 			recorder.stopRecording();
-			super.onStop();
 		}
 		super.onStop();
 	}// onStop

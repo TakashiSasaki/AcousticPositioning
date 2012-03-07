@@ -104,27 +104,21 @@ public class Recorder {
 	}// RecordingThread
 
 	public void stopRecording() {
-		if (thread == null) {
-			Log.v("No recorder object.");
-			return;
-		}// if
-		if (record.getRecordingState() == Record.RECORDSTATE_RECORDING) {
-			Log.v("stopping recording");
+		if (record != null) {
 			record.stop();
-		}// if
-		if (record.getState() == Record.STATE_INITIALIZED) {
-			Log.v("releasing internal buffer of record object");
-			record.release();
-		}// if
-		try {
+		}
+		if (thread != null) {
 			Log.v("waiting until the recording thread stops");
-			thread.join();
+			try {
+				thread.join(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS * 2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			thread = null;
+		}
+		if (record != null) {
+			record.release();
 			record = null;
-			// Writer writer = new Writer();
-			// writer.writeToCsv(recordedFrames, 0, recordedFramesMarker);
-			// writer.writeToWav(recordedFrames, 0, recordedFramesMarker);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}// stopRecording
 

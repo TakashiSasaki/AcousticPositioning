@@ -19,6 +19,7 @@ public class Record extends AudioRecord {
 		// .max(MIN_BUFFER_SIZE * 2, SAMPLING_RATE * seconds);
 		// buffer = new short[buffer_size];
 		if (getState() != STATE_INITIALIZED) {
+			this.release();
 			throw new IllegalStateException(
 					"AudioSource can not be initialized.");
 		}
