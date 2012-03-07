@@ -27,6 +27,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 	private Date recordedDate;
 	private Date generatedDate;
 
+	volatile Thread md5CalculatingThread;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,7 +100,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 						try {
 							PlayRecordedSamples();
 						} catch (NullPointerException e) {
-							e.printStackTrace();
 						}// try
 					}// onClick
 				});
@@ -109,7 +110,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 						try {
 							PlayGeneratedSamples();
 						} catch (NullPointerException e) {
-							e.printStackTrace();
 						}// try
 					}// onClick
 				});
@@ -149,6 +149,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 	}// onCreate
 
 	private void doRecord() throws FileNotFoundException {
+		editTextMd5OfRecordedSamples.setText("recording ...");
 		recordedDate = new Date();
 		recorder = new Recorder(new Runnable() {
 			public void run() {
@@ -164,6 +165,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 				});
 			}// run
 		});
+		recorder.startRecording();
 	}// doRecord
 
 	private void saveRecordedSamplesToCsv() throws IOException {
@@ -187,6 +189,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 	}
 
 	private void generateSine() throws NoSuchAlgorithmException {
+		editTextMd5OfGeneratedSamples.setText("generating sine curve");
 		int sine_hz;
 		int sine_seconds;
 		try {
@@ -210,14 +213,39 @@ public class AcousticPositioningActivity extends MenuActivity {
 	}// PlaySine
 
 	private void RefreshGeneratedSamplesMd5() throws NoSuchAlgorithmException {
-		Md5 md5 = new Md5();
-		md5.putBigEndian(generatedSamples);
-		editTextMd5OfGeneratedSamples.setText(md5.getMd5String());
-	}
+		if (md5CalculatingThread != null && md5CalculatingThread.isAlive()) {
+			editTextMd5OfGeneratedSamples.setText("digest calculator is busy");
+			return;
+		}// if
+		md5CalculatingThread = new Thread(new Runnable() {
+			public void run() {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						editTextMd5OfGeneratedSamples
+								.setText("calculating digest ...");
+					}// run
+				});// runOnUiThread
+				try {
+					final Md5 md5;
+					md5 = new Md5();
+					md5.putBigEndian(generatedSamples);
+					runOnUiThread(new Runnable() {
+						public void run() {
+							editTextMd5OfGeneratedSamples.setText(md5
+									.getMd5String());
+						}// run
+					});// runOnUiThread
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}// try
+			}// run
+		});// thread
+		md5CalculatingThread.start();
+	}// RefreshGeneratedSamplesMd5
 
 	private void RefreshRecordedSamplesMd5() throws NoSuchAlgorithmException {
 		Md5 md5 = new Md5();
-		md5.putBigEndian(generatedSamples);
+		md5.putBigEndian(recordedSamples);
 		editTextMd5OfRecordedSamples.setText(md5.getMd5String());
 	}
 

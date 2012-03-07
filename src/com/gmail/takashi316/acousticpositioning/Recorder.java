@@ -8,7 +8,7 @@ import android.media.AudioRecord;
 import android.os.Environment;
 
 public class Recorder {
-//	private static Recorder theRecorder;
+	// private static Recorder theRecorder;
 	private Thread thread;
 	private Record record;
 	private int recordedFramesMarker = 0;
@@ -97,6 +97,9 @@ public class Recorder {
 				}// try
 			}// while
 			Log.v("finished recording.");
+			if (runAfterRecording != null) {
+				runAfterRecording.run();
+			}
 		}// run
 	}// RecordingThread
 
@@ -117,12 +120,9 @@ public class Recorder {
 			Log.v("waiting until the recording thread stops");
 			thread.join();
 			record = null;
-//			Writer writer = new Writer();
-//			writer.writeToCsv(recordedFrames, 0, recordedFramesMarker);
-//			writer.writeToWav(recordedFrames, 0, recordedFramesMarker);
-			if (runAfterRecording != null) {
-				runAfterRecording.run();
-			}
+			// Writer writer = new Writer();
+			// writer.writeToCsv(recordedFrames, 0, recordedFramesMarker);
+			// writer.writeToWav(recordedFrames, 0, recordedFramesMarker);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

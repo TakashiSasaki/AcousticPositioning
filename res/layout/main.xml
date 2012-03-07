@@ -29,9 +29,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="5 (seconds)"
+            android:hint="1 (seconds)"
             android:inputType="number"
-            android:text="5" />
+            android:text="1" />
 
         <Button
             android:id="@+id/buttonGenerateSine"

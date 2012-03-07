@@ -13,13 +13,17 @@ public class Record extends AudioRecord {
 
 	// short[]buffer;
 
-	public Record() throws IllegalArgumentException {
+	public Record() throws IllegalArgumentException, IllegalStateException {
 		super(AudioSource.MIC, SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, Math.max(MIN_BUFFER_SIZE * 4,
 						SAMPLING_RATE * 2 * 2));
 		// int buffer_size = Math
 		// .max(MIN_BUFFER_SIZE * 2, SAMPLING_RATE * seconds);
 		// buffer = new short[buffer_size];
+		if (getState() != STATE_INITIALIZED) {
+			throw new IllegalStateException(
+					"AudioSource can not be initialized.");
+		}
 
 		setNotificationMarkerPosition(MIN_BUFFER_SIZE * 3);
 		setPositionNotificationPeriod(NOTIFICATION_PERIOD_IN_FRAME);
