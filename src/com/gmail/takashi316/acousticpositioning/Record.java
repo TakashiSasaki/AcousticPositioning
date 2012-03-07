@@ -11,8 +11,6 @@ public class Record extends AudioRecord {
 			SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
 			AudioFormat.ENCODING_PCM_16BIT);
 
-	// short[]buffer;
-
 	public Record() throws IllegalArgumentException, IllegalStateException {
 		super(AudioSource.MIC, SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, Math.max(MIN_BUFFER_SIZE * 4,

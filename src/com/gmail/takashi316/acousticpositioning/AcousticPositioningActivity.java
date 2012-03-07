@@ -165,7 +165,11 @@ public class AcousticPositioningActivity extends MenuActivity {
 		});// recorder
 		recordedDate = new Date();
 		editTextMd5OfRecordedSamples.setText("recording ...");
-		recorder.startRecording();
+		try {
+			recorder.startRecording();
+		} catch (IllegalStateException e) {
+			editTextMd5OfRecordedSamples.setText(e.getMessage());
+		}
 	}// doRecord
 
 	private void saveRecordedSamplesToCsv() throws IOException {

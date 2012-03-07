@@ -128,11 +128,15 @@ public class Recorder {
 		}
 	}// stopRecording
 
-	synchronized public void startRecording() {
+	synchronized public void startRecording() throws IllegalStateException {
 		stopRecording();
 		recordedFrames = new short[RECORDING_BUFFER_SIZE_IN_FRAMES];
 		recordedFramesMarker = 0;
-		record = new Record();
+		try {
+			record = new Record();
+		} catch (IllegalStateException e) {
+			throw e;
+		}
 		thread = new RecordingThread();
 		startDate = new Date();
 		thread.start();
