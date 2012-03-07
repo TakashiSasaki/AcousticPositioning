@@ -1,24 +1,28 @@
 package com.gmail.takashi316.acousticpositioning;
 
+import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Md5 {
-	static private MessageDigest messageDigest;
-	private String md5String;
+	private MessageDigest messageDigest;
 
 	public Md5() throws NoSuchAlgorithmException {
-		if (messageDigest != null) {
-			messageDigest = MessageDigest.getInstance("MD5");
-		}// if
+		messageDigest = MessageDigest.getInstance("MD5");
+		messageDigest.reset();
 	}// Md5
 
 	public String getMd5String() {
-		if (md5String == null) {
-			throw new NullPointerException(
-					"message digest is not calculated yet.");
-		}// if
-		return md5String;
+		StringWriter sw = new StringWriter();
+		byte[] digest = messageDigest.digest();
+		assert (digest.length == 16);
+		for (int i = 0; i < digest.length; ++i) {
+			String hex1digit = Integer.toHexString(digest[i] & 0xff);
+			sw.append(hex1digit);
+		}
+		String digest_hex_string = sw.toString();
+		assert (digest_hex_string.length() == 32);
+		return digest_hex_string;
 	}// getMd5String
 
 	static private byte getLowerByte(short s) {
@@ -45,13 +49,15 @@ public class Md5 {
 
 	public void putBigEndian(short[] data) {
 		for (int i = 0; i < data.length; ++i) {
-			messageDigest.update(getBigEndian(data[i]));
+			byte[] tmp = getBigEndian(data[i]);
+			messageDigest.update(tmp);
 		}
 	}
 
 	public void putLittleEndian(short[] data) {
 		for (int i = 0; i < data.length; ++i) {
-			messageDigest.update(getLittleEndian(data[i]));
+			byte[] tmp = getLittleEndian(data[i]);
+			messageDigest.update(tmp);
 		}
 	}
 }

@@ -3,106 +3,190 @@ package com.gmail.takashi316.acousticpositioning;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 import android.media.AudioTrack;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
 public class AcousticPositioningActivity extends MenuActivity {
-	Button buttonPlaySine;
-	EditText editTextSineHz;
-	EditText editTextSineSeconds;
-	EditText editTextRecordingDuration;
-	Button buttonRecord;
-	Button buttonPlayRecordedAudio;
-	EditText editTextMd5;
+	private EditText editTextSineHz;
+	private EditText editTextSineSeconds;
+	private EditText editTextRecordingDuration;
+	private EditText editTextMd5OfGeneratedSamples;
+	private EditText editTextMd5OfRecordedSamples;
 
-	AudioTrack audioTrack;
-	Recorder recorder;
+	private AudioTrack audioTrack;
+	private Recorder recorder;
 
-	short[] recordedSamples;
+	private short[] recordedSamples;
+	private short[] generatedSamples;
+	private Date recordedDate;
+	private Date generatedDate;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		buttonPlaySine = (Button) findViewById(R.id.buttonPlaySine);
 		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
 		editTextSineSeconds = (EditText) findViewById(R.id.editTextSineSeconds);
 		editTextRecordingDuration = (EditText) findViewById(R.id.editTextRecordingDuration);
-		buttonRecord = (Button) findViewById(R.id.buttonRecord);
-		buttonPlayRecordedAudio = (Button) findViewById(R.id.buttonPlayRecordedAudio);
-		editTextMd5 = (EditText) findViewById(R.id.editTextMd5OfRecordedSamples);
+		editTextMd5OfGeneratedSamples = (EditText) findViewById(R.id.editTextMd5OfGeneratedSamples);
+		editTextMd5OfRecordedSamples = (EditText) findViewById(R.id.editTextMd5OfRecordedSamples);
 
-		buttonPlaySine.setOnClickListener(new OnClickListener() {
+		((Button) findViewById(R.id.buttonGenerateSine))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						try {
+							generateSine();
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						}
+					}
+				});
 
-			public void onClick(View v) {
-				Handler handler = new Handler();
-				handler.post(new Runnable() {
+		((Button) findViewById(R.id.buttonRecord))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						try {
+							doRecord();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
+					}// onClick
+				});
 
-					public void run() {
-						PlaySine();
-					}// run
-				});// Runnable
-			}// onClick
-		});// OnClickListener
+		((Button) findViewById(R.id.buttonSaveRecordedSamplesToCsv))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						Thread thread = new Thread(new Runnable() {
+							public void run() {
+								try {
+									saveRecordedSamplesToCsv();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}// run
+						});
+						thread.start();
+					}// onCick
+				});
 
-		buttonRecord.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				try {
-					recorder = new Recorder(new Runnable() {
-						public void run() {
-							recordedSamples = recorder.getRecordedFrames();
-							Writer writer;
-							try {
-								writer = new Writer();
-								writer.writeToCsv(recordedSamples);
-								writer.writeToWav(recordedSamples);
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
+		((Button) findViewById(R.id.buttonSaveRecordedSamplesToWav))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						Thread thread = new Thread(new Runnable() {
+							public void run() {
+								try {
+									saveRecordedSamplesToWav();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 							}
-							try {
-								final Md5 md5 = new Md5();
-								md5.putBigEndian(recordedSamples);
-								AcousticPositioningActivity.this
-										.runOnUiThread(new Runnable() {
-											public void run() {
-												editTextMd5.setText(md5
-														.getMd5String());
-											}// run
-										});
-							} catch (NoSuchAlgorithmException e) {
-								e.printStackTrace();
-							}
-						}// run
-					});
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}// onClick
-		});
+						});
+						thread.start();
+					}// onClick
+				});
 
-		buttonPlayRecordedAudio.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				try {
-					Playback();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}// onClick
-		});
+		((Button) findViewById(R.id.buttonPlayRecordedSamples))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						try {
+							PlayRecordedSamples();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}// try
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonPlayGeneratedSamples))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						try {
+							PlayGeneratedSamples();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}// try
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToCsv))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						Thread thread = new Thread(new Runnable() {
+							public void run() {
+								try {
+									saveGeneratedSamplesToCsv();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}// try
+							}// run
+						});
+						thread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToWav))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						Thread thread = new Thread(new Runnable() {
+							public void run() {
+								try {
+									saveGeneratedSamplesToWav();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}// try
+							}// run
+						});
+						thread.start();
+					}// onClick
+				});
 
 	}// onCreate
 
-	private void PlaySine() {
+	protected void doRecord() throws FileNotFoundException {
+		recordedDate = new Date();
+		recorder = new Recorder(new Runnable() {
+			public void run() {
+				recordedSamples = recorder.getRecordedFrames();
+				runOnUiThread(new Runnable() {
+					public void run() {
+						try {
+							RefreshRecordedSamplesMd5();
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						}// try
+					}// run
+				});
+			}// run
+		});
+	}// doRecord
+
+	private void saveRecordedSamplesToCsv() throws IOException {
+		Writer writer = new Writer(recordedDate);
+		writer.writeToCsv(recordedSamples);
+	}
+
+	private void saveRecordedSamplesToWav() throws IOException {
+		Writer writer = new Writer(recordedDate);
+		writer.writeToWav(recordedSamples);
+	}
+
+	private void saveGeneratedSamplesToCsv() throws IOException {
+		Writer writer = new Writer(generatedDate);
+		writer.writeToCsv(generatedSamples);
+	}
+
+	private void saveGeneratedSamplesToWav() throws IOException {
+		Writer writer = new Writer(generatedDate);
+		writer.writeToWav(generatedSamples);
+	}
+
+	private void generateSine() throws NoSuchAlgorithmException {
 		int sine_hz;
 		int sine_seconds;
 		try {
@@ -111,18 +195,53 @@ public class AcousticPositioningActivity extends MenuActivity {
 					.toString());
 		} catch (Exception e) {
 			return;
-		}
+		}// try
 
 		if (audioTrack != null) {
 			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 				audioTrack.stop();
 			}
 			audioTrack.release();
-		}
+		}// if
 		SineSamples sine_samples = new SineSamples(sine_hz, sine_seconds);
-		audioTrack = new MyAudioTrack(sine_samples.getSamplesInShort());
-		audioTrack.play();
+		generatedSamples = sine_samples.getSamplesInShort();
+		generatedDate = new Date();
+		RefreshGeneratedSamplesMd5();
 	}// PlaySine
+
+	private void RefreshGeneratedSamplesMd5() throws NoSuchAlgorithmException {
+		Md5 md5 = new Md5();
+		md5.putBigEndian(generatedSamples);
+		editTextMd5OfGeneratedSamples.setText(md5.getMd5String());
+	}
+
+	private void RefreshRecordedSamplesMd5() throws NoSuchAlgorithmException {
+		Md5 md5 = new Md5();
+		md5.putBigEndian(generatedSamples);
+		editTextMd5OfRecordedSamples.setText(md5.getMd5String());
+	}
+
+	private void PlayGeneratedSamples() throws FileNotFoundException {
+		if (audioTrack != null) {
+			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+				audioTrack.stop();
+			}
+			audioTrack.release();
+		}
+		audioTrack = new MyAudioTrack(generatedSamples);
+		audioTrack.play();
+	}// PlayBack
+
+	private void PlayRecordedSamples() throws FileNotFoundException {
+		if (audioTrack != null) {
+			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+				audioTrack.stop();
+			}
+			audioTrack.release();
+		}
+		audioTrack = new MyAudioTrack(recordedSamples);
+		audioTrack.play();
+	}// PlayBack
 
 	@Override
 	public void onStop() {
@@ -136,15 +255,4 @@ public class AcousticPositioningActivity extends MenuActivity {
 		}
 		super.onStop();
 	}// onStop
-
-	private void Playback() throws FileNotFoundException {
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}
-		audioTrack = new MyAudioTrack(recordedSamples);
-		audioTrack.play();
-	}// PlayBack
 }// AcousticPositioningActivity

@@ -34,10 +34,10 @@
             android:text="5" />
 
         <Button
-            android:id="@+id/buttonPlaySine"
+            android:id="@+id/buttonGenerateSine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Play" />
+            android:text="generate" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,12 +61,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Record" />
-
-        <Button
-            android:id="@+id/buttonPlayRecordedAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,11 +69,61 @@
         android:layout_height="wrap_content" >
 
         <EditText
-            android:id="@+id/editTextMd5OfRecordedSamples"
+            android:id="@+id/editTextMd5OfGeneratedSamples"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:editable="false" />
+            android:editable="false"
+            android:hint="md5 of generated samples" />
+
+        <Button
+            android:id="@+id/buttonSaveGeneratedSamplesToCsv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="csv" />
+
+        <Button
+            android:id="@+id/buttonSaveGeneratedSamplesToWav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="wav" />
+
+        <Button
+            android:id="@+id/buttonPlayGeneratedSamples"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="play" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/editTextMd5OfRecordedSamples"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="md5 of recorded samples" />
+
+        <Button
+            android:id="@+id/buttonSaveRecordedSamplesToCsv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="csv" />
+
+        <Button
+            android:id="@+id/buttonSaveRecordedSamplesToWav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="wav" />
+
+        <Button
+            android:id="@+id/buttonPlayRecordedSamples"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="play" />
     </LinearLayout>
 
 </LinearLayout>
