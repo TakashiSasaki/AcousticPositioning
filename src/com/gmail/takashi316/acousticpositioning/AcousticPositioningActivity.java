@@ -97,7 +97,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						try {
 							PlayRecordedSamples();
-						} catch (FileNotFoundException e) {
+						} catch (NullPointerException e) {
 							e.printStackTrace();
 						}// try
 					}// onClick
@@ -108,7 +108,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						try {
 							PlayGeneratedSamples();
-						} catch (FileNotFoundException e) {
+						} catch (NullPointerException e) {
 							e.printStackTrace();
 						}// try
 					}// onClick
@@ -148,7 +148,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 
 	}// onCreate
 
-	protected void doRecord() throws FileNotFoundException {
+	private void doRecord() throws FileNotFoundException {
 		recordedDate = new Date();
 		recorder = new Recorder(new Runnable() {
 			public void run() {
@@ -221,23 +221,29 @@ public class AcousticPositioningActivity extends MenuActivity {
 		editTextMd5OfRecordedSamples.setText(md5.getMd5String());
 	}
 
-	private void PlayGeneratedSamples() throws FileNotFoundException {
+	private void PlayGeneratedSamples() throws NullPointerException {
 		if (audioTrack != null) {
 			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 				audioTrack.stop();
 			}
 			audioTrack.release();
 		}
+		if (generatedSamples == null) {
+			throw new NullPointerException("generatedSamples is null");
+		}
 		audioTrack = new MyAudioTrack(generatedSamples);
 		audioTrack.play();
 	}// PlayBack
 
-	private void PlayRecordedSamples() throws FileNotFoundException {
+	private void PlayRecordedSamples() throws NullPointerException {
 		if (audioTrack != null) {
 			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 				audioTrack.stop();
 			}
 			audioTrack.release();
+		}
+		if (recordedSamples == null) {
+			throw new NullPointerException("recordedSamples is null");
 		}
 		audioTrack = new MyAudioTrack(recordedSamples);
 		audioTrack.play();
