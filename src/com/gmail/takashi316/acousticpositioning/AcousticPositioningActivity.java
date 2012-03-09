@@ -1,7 +1,6 @@
 package com.gmail.takashi316.acousticpositioning;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
@@ -24,8 +23,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 
 	private short[] recordedSamples;
 	private short[] generatedSamples;
-	private Date recordedDate;
-	private Date generatedDate;
 
 	volatile Thread md5CalculatingThread;
 
@@ -65,15 +62,14 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonSaveRecordedSamplesToCsv))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveRecordedSamplesToCsv();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}// run
-						});
+						Thread thread;
+						try {
+							thread = new CsvWriter(new Date(), recordedSamples,
+									0, recordedSamples.length);
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+							return;
+						}
 						thread.start();
 					}// onCick
 				});
@@ -81,16 +77,14 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonSaveRecordedSamplesToWav))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveRecordedSamplesToWav();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						});
-						thread.start();
+						Thread thread;
+						try {
+							thread = new WavWriterThread(recordedSamples, 0,
+									recordedSamples.length);
+							thread.start();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
 					}// onClick
 				});
 
@@ -117,32 +111,24 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToCsv))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveGeneratedSamplesToCsv();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}// try
-							}// run
-						});
-						thread.start();
+						try {
+							(new CsvWriter(new Date(), generatedSamples, 0,
+									generatedSamples.length)).start();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
 					}// onClick
 				});
 
 		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToWav))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveGeneratedSamplesToWav();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}// try
-							}// run
-						});
-						thread.start();
+						try {
+							(new WavWriterThread(generatedSamples, 0,
+									generatedSamples.length)).start();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
 					}// onClick
 				});
 
@@ -165,7 +151,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 				});
 			}// runOnUiThread
 		});// recorder
-		recordedDate = new Date();
 		editTextMd5OfRecordedSamples.setText("recording ...");
 		try {
 			recorder.startRecording();
@@ -174,26 +159,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 			recorder.stopRecording();
 		}
 	}// doRecord
-
-	private void saveRecordedSamplesToCsv() throws IOException {
-		Writer writer = new Writer(recordedDate);
-		writer.writeToCsv(recordedSamples);
-	}
-
-	private void saveRecordedSamplesToWav() throws IOException {
-		Writer writer = new Writer(recordedDate);
-		writer.writeToWav(recordedSamples);
-	}
-
-	private void saveGeneratedSamplesToCsv() throws IOException {
-		Writer writer = new Writer(generatedDate);
-		writer.writeToCsv(generatedSamples);
-	}
-
-	private void saveGeneratedSamplesToWav() throws IOException {
-		Writer writer = new Writer(generatedDate);
-		writer.writeToWav(generatedSamples);
-	}
 
 	private void generateSine() throws NoSuchAlgorithmException {
 		editTextMd5OfGeneratedSamples.setText("generating sine curve");
@@ -215,7 +180,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 		}// if
 		SineSamples sine_samples = new SineSamples(sine_hz, sine_seconds);
 		generatedSamples = sine_samples.getSamplesInShort();
-		generatedDate = new Date();
 		RefreshGeneratedSamplesMd5();
 	}// PlaySine
 
