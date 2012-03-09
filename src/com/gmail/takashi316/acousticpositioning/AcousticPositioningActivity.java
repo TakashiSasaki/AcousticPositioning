@@ -91,20 +91,21 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonPlayRecordedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						try {
-							PlayRecordedSamples();
-						} catch (NullPointerException e) {
-						}// try
+						if (generatedSamples == null) {
+							throw new NullPointerException(
+									"generatedSamples is null");
+						}
+						(new PlayerThread(generatedSamples)).start();
 					}// onClick
 				});
 
 		((Button) findViewById(R.id.buttonPlayGeneratedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						try {
-							PlayGeneratedSamples();
-						} catch (NullPointerException e) {
-						}// try
+						if (generatedSamples == null) {
+							throw new NullPointerException();
+						}
+						(new PlayerThread(generatedSamples)).start();
 					}// onClick
 				});
 
@@ -243,34 +244,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 		});// md5CalculationThread
 		md5CalculatingThread.start();
 	}// refreshRecordedSamplesMd5
-
-	private void PlayGeneratedSamples() throws NullPointerException {
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}
-		if (generatedSamples == null) {
-			throw new NullPointerException("generatedSamples is null");
-		}
-		audioTrack = new MyAudioTrack(generatedSamples);
-		audioTrack.play();
-	}// PlayBack
-
-	private void PlayRecordedSamples() throws NullPointerException {
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}
-		if (recordedSamples == null) {
-			throw new NullPointerException("recordedSamples is null");
-		}
-		audioTrack = new MyAudioTrack(recordedSamples);
-		audioTrack.play();
-	}// PlayBack
 
 	@Override
 	public void onStop() {
