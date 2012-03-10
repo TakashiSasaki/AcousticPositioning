@@ -19,7 +19,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 	private EditText editTextMd5OfRecordedSamples;
 
 	private AudioTrack audioTrack;
-	private Recorder recorder;
+	// private Recorder recorder;
+	private RecorderThread recorderThread;
+	private PlayerThread playerThread;
 
 	private short[] recordedSamples;
 	private short[] generatedSamples;
@@ -51,13 +53,21 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonRecord))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						try {
-							doRecord();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
+						if (recorderThread != null) {
+							recorderThread.stopRecording();
+							recorderThread = null;
 						}
+						recorderThread = new RecorderThread(1000);
+						recorderThread
+								.setRunAfterRecordingCallback(new Runnable() {
+									public void run() {
+										recordedSamples = recorderThread
+												.getPreviousBuffer();
+									}// run
+								});// setRunAfterRecordingCallback
+						recorderThread.start();
 					}// onClick
-				});
+				});// setOnClickListener
 
 		((Button) findViewById(R.id.buttonSaveRecordedSamplesToCsv))
 				.setOnClickListener(new OnClickListener() {
@@ -91,21 +101,36 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonPlayRecordedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						if (generatedSamples == null) {
-							throw new NullPointerException(
-									"generatedSamples is null");
+						if (playerThread != null) {
+							playerThread.stopPlaying();
+							playerThread = null;
+							return;
 						}
-						(new PlayerThread(generatedSamples)).start();
+						if (recordedSamples == null) {
+							editTextMd5OfRecordedSamples
+									.setText("no recorded samples");
+							return;
+						}
+						playerThread = new PlayerThread(recordedSamples);
+						playerThread.start();
 					}// onClick
 				});
 
 		((Button) findViewById(R.id.buttonPlayGeneratedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						if (generatedSamples == null) {
-							throw new NullPointerException();
+						if (playerThread != null) {
+							playerThread.stopPlaying();
+							playerThread = null;
+							return;
 						}
-						(new PlayerThread(generatedSamples)).start();
+						if (generatedSamples == null) {
+							editTextMd5OfGeneratedSamples
+									.setText("no generated samples");
+							return;
+						}
+						playerThread = new PlayerThread(generatedSamples);
+						playerThread.start();
 					}// onClick
 				});
 
@@ -135,31 +160,31 @@ public class AcousticPositioningActivity extends MenuActivity {
 
 	}// onCreate
 
-	private void doRecord() throws FileNotFoundException {
-		if (recorder != null)
-			recorder.stopRecording();
-		recorder = new Recorder(new Runnable() {
-			public void run() {
-				recordedSamples = recorder.getRecordedFrames();
-				runOnUiThread(new Runnable() {
-					public void run() {
-						try {
-							RefreshRecordedSamplesMd5();
-						} catch (NoSuchAlgorithmException e) {
-							e.printStackTrace();
-						}// try
-					}// run
-				});
-			}// runOnUiThread
-		});// recorder
-		editTextMd5OfRecordedSamples.setText("recording ...");
-		try {
-			recorder.startRecording();
-		} catch (IllegalStateException e) {
-			editTextMd5OfRecordedSamples.setText(e.getMessage());
-			recorder.stopRecording();
-		}
-	}// doRecord
+	// private void doRecord() throws FileNotFoundException {
+	// if (recorder != null)
+	// recorder.stopRecording();
+	// recorder = new Recorder(new Runnable() {
+	// public void run() {
+	// recordedSamples = recorder.getRecordedFrames();
+	// runOnUiThread(new Runnable() {
+	// public void run() {
+	// try {
+	// RefreshRecordedSamplesMd5();
+	// } catch (NoSuchAlgorithmException e) {
+	// e.printStackTrace();
+	// }// try
+	// }// run
+	// });
+	// }// runOnUiThread
+	// });// recorder
+	// editTextMd5OfRecordedSamples.setText("recording ...");
+	// try {
+	// recorder.startRecording();
+	// } catch (IllegalStateException e) {
+	// editTextMd5OfRecordedSamples.setText(e.getMessage());
+	// recorder.stopRecording();
+	// }
+	// }// doRecord
 
 	private void generateSine() throws NoSuchAlgorithmException {
 		editTextMd5OfGeneratedSamples.setText("generating sine curve");
@@ -251,8 +276,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 			audioTrack.stop();
 			audioTrack.release();
 		}
-		if (recorder != null) {
-			recorder.stopRecording();
+		if (recorderThread != null) {
+			recorderThread.stopRecording();
 		}
 		super.onStop();
 	}// onStop

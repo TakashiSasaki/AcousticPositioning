@@ -38,12 +38,12 @@ public class WavWriterThread extends WriterThread {
 															// 1
 															// for mono, 2 for
 															// stereo
-			raf.writeInt(Integer.reverseBytes(Record.SAMPLING_RATE)); // Sample
-																		// rate
+			raf.writeInt(Integer.reverseBytes(MyAudioRecord.SAMPLING_RATE)); // Sample
+			// rate
 			raf.writeInt(Integer
-					.reverseBytes(Record.SAMPLING_RATE * 16 * 1 / 8)); // Byte
-																		// rate,
-																		// SampleRate*NumberOfChannels*BitsPerSample/8
+					.reverseBytes(MyAudioRecord.SAMPLING_RATE * 16 * 1 / 8)); // Byte
+			// rate,
+			// SampleRate*NumberOfChannels*BitsPerSample/8
 			raf.writeShort(Short.reverseBytes((short) (1 * 16 / 8))); // Block
 			// align,
 			// NumberOfChannels*BitsPerSample/8
