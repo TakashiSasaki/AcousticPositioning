@@ -11,7 +11,6 @@ public class PlayerThread extends Thread {
 	private static final int minBufferSize = AudioTrack.getMinBufferSize(
 			SAMPLING_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 			AudioFormat.ENCODING_PCM_16BIT);
-	private static final int MAX_NUMBER_OF_SAMPLES = SAMPLING_RATE * 2;
 	private boolean enabled;
 	final private static int MONITOR_PLAY_INTERVAL = 200;
 	int elapsed;

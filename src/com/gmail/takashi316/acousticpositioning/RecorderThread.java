@@ -12,13 +12,13 @@ public class RecorderThread extends Thread {
 	private boolean toBeContinued;
 	private int nextBufferSize;
 
-	public RecorderThread(int recording_duration_in_millisecond) {
+	public RecorderThread(int recording_duration_in_millisecond, boolean continuously) {
 		audioRecord = new MyAudioRecord();
 		currentBuffer = new short[recording_duration_in_millisecond / 1000
 				* MyAudioRecord.SAMPLING_RATE];
 		currentBufferMarker = 0;
 		nextBufferSize = currentBuffer.length;
-		toBeContinued = false;
+		toBeContinued = continuously;
 	}// a constructor
 
 	public void setRunAfterRecordingCallback(Runnable runnable) {

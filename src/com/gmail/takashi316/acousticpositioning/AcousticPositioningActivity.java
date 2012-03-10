@@ -54,25 +54,39 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonRecord))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
+						final Button button = (Button) arg0;
 						if (recorderThread != null) {
 							recorderThread.stopRecording();
 							recorderThread = null;
-							arg0.setBackgroundColor(Color.GREEN);
+							button.setBackgroundColor(Color.YELLOW);
+							button.setText("stopping");
 							return;
 						}
 						int recording_duration = Integer
 								.parseInt(editTextRecordingDuration.getText()
 										.toString());
-						recorderThread = new RecorderThread(recording_duration);
+						recorderThread = new RecorderThread(recording_duration,
+								true);
 						recorderThread
 								.setRunAfterRecordingCallback(new Runnable() {
 									public void run() {
-										recordedSamples = recorderThread
-												.getPreviousBuffer();
+										try {
+											recordedSamples = recorderThread
+													.getPreviousBuffer();
+										} catch (NullPointerException e) {
+											recordedSamples = null;
+										}
+										runOnUiThread(new Runnable() {
+											public void run() {
+												button.setText("record");
+												button.setBackgroundColor(Color.GRAY);
+											}
+										});
 									}// run
 								});// setRunAfterRecordingCallback
 						recorderThread.start();
-						arg0.setBackgroundColor(Color.RED);
+						button.setBackgroundColor(Color.RED);
+						button.setText("stop");
 					}// onClick
 				});// setOnClickListener
 
@@ -108,11 +122,17 @@ public class AcousticPositioningActivity extends MenuActivity {
 		((Button) findViewById(R.id.buttonPlayRecordedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
+						final Button button = (Button) arg0;
 						if (playerThread != null) {
 							playerThread.stopPlaying();
 							playerThread = null;
-							arg0.setBackgroundColor(Color.GREEN);
+							button.setBackgroundColor(Color.GRAY);
+							button.setText("play");
 							return;
+						}
+						if (recorderThread != null) {
+							recordedSamples = recorderThread
+									.getPreviousBuffer();
 						}
 						if (recordedSamples == null) {
 							editTextMd5OfRecordedSamples
@@ -121,17 +141,20 @@ public class AcousticPositioningActivity extends MenuActivity {
 						}
 						playerThread = new PlayerThread(recordedSamples);
 						playerThread.start();
-						arg0.setBackgroundColor(Color.RED);
+						button.setBackgroundColor(Color.RED);
+						button.setText("stop");
 					}// onClick
 				});
 
 		((Button) findViewById(R.id.buttonPlayGeneratedSamples))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
+						Button button = (Button) arg0;
 						if (playerThread != null) {
 							playerThread.stopPlaying();
 							playerThread = null;
-							arg0.setBackgroundColor(Color.GREEN);
+							button.setBackgroundColor(Color.GRAY);
+							button.setText("play");
 							return;
 						}
 						if (generatedSamples == null) {
@@ -141,7 +164,8 @@ public class AcousticPositioningActivity extends MenuActivity {
 						}
 						playerThread = new PlayerThread(generatedSamples);
 						playerThread.start();
-						arg0.setBackgroundColor(Color.RED);
+						button.setBackgroundColor(Color.RED);
+						button.setText("stop");
 					}// onClick
 				});
 
