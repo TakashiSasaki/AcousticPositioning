@@ -26,7 +26,7 @@ public class MenuActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.itemAcousticPositioning) {
 			Intent intent = new Intent();
-			intent.setClass(this, AcousticPositioningActivity.class);
+			intent.setClass(this, SandboxActivity.class);
 			startActivity(intent);
 			return true;
 		}

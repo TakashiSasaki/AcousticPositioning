@@ -12,7 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class AcousticPositioningActivity extends MenuActivity {
+public class SandboxActivity extends MenuActivity {
 	private EditText editTextSineHz;
 	private EditText editTextSineSeconds;
 	EditText editTextRecordingDuration;
@@ -57,27 +57,27 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
 						final Button button = (Button) arg0;
-						if (AcousticPositioningActivity.this.recorderThread != null) {
-							AcousticPositioningActivity.this.recorderThread
+						if (SandboxActivity.this.recorderThread != null) {
+							SandboxActivity.this.recorderThread
 									.stopRecording();
-							AcousticPositioningActivity.this.recorderThread = null;
+							SandboxActivity.this.recorderThread = null;
 							button.setBackgroundColor(Color.YELLOW);
 							button.setText("stopping");
 							return;
 						}
 						int recording_duration = Integer
-								.parseInt(AcousticPositioningActivity.this.editTextRecordingDuration
+								.parseInt(SandboxActivity.this.editTextRecordingDuration
 										.getText().toString());
-						AcousticPositioningActivity.this.recorderThread = new RecorderThread(
+						SandboxActivity.this.recorderThread = new RecorderThread(
 								recording_duration, true);
-						AcousticPositioningActivity.this.recorderThread
+						SandboxActivity.this.recorderThread
 								.setRunAfterRecordingCallback(new Runnable() {
 									public void run() {
 										try {
-											AcousticPositioningActivity.this.recordedSamples = AcousticPositioningActivity.this.recorderThread
+											SandboxActivity.this.recordedSamples = SandboxActivity.this.recorderThread
 													.getPreviousBuffer();
 										} catch (NullPointerException e) {
-											AcousticPositioningActivity.this.recordedSamples = null;
+											SandboxActivity.this.recordedSamples = null;
 										}
 										runOnUiThread(new Runnable() {
 											public void run() {
@@ -87,7 +87,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 										});
 									}// run
 								});// setRunAfterRecordingCallback
-						AcousticPositioningActivity.this.recorderThread.start();
+						SandboxActivity.this.recorderThread.start();
 						button.setBackgroundColor(Color.RED);
 						button.setText("stop");
 					}// onClick
@@ -100,9 +100,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 						try {
 							thread = new CsvWriter(
 									new Date(),
-									AcousticPositioningActivity.this.recordedSamples,
+									SandboxActivity.this.recordedSamples,
 									0,
-									AcousticPositioningActivity.this.recordedSamples.length);
+									SandboxActivity.this.recordedSamples.length);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 							return;
@@ -117,9 +117,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 						Thread thread;
 						try {
 							thread = new WavWriterThread(
-									AcousticPositioningActivity.this.recordedSamples,
+									SandboxActivity.this.recordedSamples,
 									0,
-									AcousticPositioningActivity.this.recordedSamples.length);
+									SandboxActivity.this.recordedSamples.length);
 							thread.start();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -131,26 +131,26 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
 						final Button button = (Button) arg0;
-						if (AcousticPositioningActivity.this.playerThread != null) {
-							AcousticPositioningActivity.this.playerThread
+						if (SandboxActivity.this.playerThread != null) {
+							SandboxActivity.this.playerThread
 									.stopPlaying();
-							AcousticPositioningActivity.this.playerThread = null;
+							SandboxActivity.this.playerThread = null;
 							button.setBackgroundColor(Color.GRAY);
 							button.setText("play");
 							return;
 						}
-						if (AcousticPositioningActivity.this.recorderThread != null) {
-							AcousticPositioningActivity.this.recordedSamples = AcousticPositioningActivity.this.recorderThread
+						if (SandboxActivity.this.recorderThread != null) {
+							SandboxActivity.this.recordedSamples = SandboxActivity.this.recorderThread
 									.getPreviousBuffer();
 						}
-						if (AcousticPositioningActivity.this.recordedSamples == null) {
-							AcousticPositioningActivity.this.editTextMd5OfRecordedSamples
+						if (SandboxActivity.this.recordedSamples == null) {
+							SandboxActivity.this.editTextMd5OfRecordedSamples
 									.setText("no recorded samples");
 							return;
 						}
-						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								AcousticPositioningActivity.this.recordedSamples);
-						AcousticPositioningActivity.this.playerThread.start();
+						SandboxActivity.this.playerThread = new PlayerThread(
+								SandboxActivity.this.recordedSamples);
+						SandboxActivity.this.playerThread.start();
 						button.setBackgroundColor(Color.RED);
 						button.setText("stop");
 					}// onClick
@@ -160,22 +160,22 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
 						Button button = (Button) arg0;
-						if (AcousticPositioningActivity.this.playerThread != null) {
-							AcousticPositioningActivity.this.playerThread
+						if (SandboxActivity.this.playerThread != null) {
+							SandboxActivity.this.playerThread
 									.stopPlaying();
-							AcousticPositioningActivity.this.playerThread = null;
+							SandboxActivity.this.playerThread = null;
 							button.setBackgroundColor(Color.GRAY);
 							button.setText("play");
 							return;
 						}
-						if (AcousticPositioningActivity.this.generatedSamples == null) {
-							AcousticPositioningActivity.this.editTextMd5OfGeneratedSamples
+						if (SandboxActivity.this.generatedSamples == null) {
+							SandboxActivity.this.editTextMd5OfGeneratedSamples
 									.setText("no generated samples");
 							return;
 						}
-						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								AcousticPositioningActivity.this.generatedSamples);
-						AcousticPositioningActivity.this.playerThread.start();
+						SandboxActivity.this.playerThread = new PlayerThread(
+								SandboxActivity.this.generatedSamples);
+						SandboxActivity.this.playerThread.start();
 						button.setBackgroundColor(Color.RED);
 						button.setText("stop");
 					}// onClick
@@ -187,9 +187,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 						try {
 							(new CsvWriter(
 									new Date(),
-									AcousticPositioningActivity.this.generatedSamples,
+									SandboxActivity.this.generatedSamples,
 									0,
-									AcousticPositioningActivity.this.generatedSamples.length))
+									SandboxActivity.this.generatedSamples.length))
 									.start();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -202,9 +202,9 @@ public class AcousticPositioningActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						try {
 							(new WavWriterThread(
-									AcousticPositioningActivity.this.generatedSamples,
+									SandboxActivity.this.generatedSamples,
 									0,
-									AcousticPositioningActivity.this.generatedSamples.length))
+									SandboxActivity.this.generatedSamples.length))
 									.start();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -216,12 +216,12 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
 						final FftThread fft_thread = new FftThread(
-								AcousticPositioningActivity.this.generatedSamples);
+								SandboxActivity.this.generatedSamples);
 						fft_thread.setCallback(new Runnable() {
 							public void run() {
 								runOnUiThread(new Runnable() {
 									public void run() {
-										AcousticPositioningActivity.this.editTextPeakFrequency.setText(""
+										SandboxActivity.this.editTextPeakFrequency.setText(""
 												+ fft_thread.getPeakFrequency());
 									}// run
 								});
@@ -294,17 +294,17 @@ public class AcousticPositioningActivity extends MenuActivity {
 			public void run() {
 				runOnUiThread(new Runnable() {
 					public void run() {
-						AcousticPositioningActivity.this.editTextMd5OfGeneratedSamples
+						SandboxActivity.this.editTextMd5OfGeneratedSamples
 								.setText("calculating digest ...");
 					}// run
 				});// runOnUiThread
 				try {
 					final Md5 md5;
 					md5 = new Md5();
-					md5.putBigEndian(AcousticPositioningActivity.this.generatedSamples);
+					md5.putBigEndian(SandboxActivity.this.generatedSamples);
 					runOnUiThread(new Runnable() {
 						public void run() {
-							AcousticPositioningActivity.this.editTextMd5OfGeneratedSamples
+							SandboxActivity.this.editTextMd5OfGeneratedSamples
 									.setText(md5.getMd5String());
 						}// run
 					});// runOnUiThread
@@ -327,16 +327,16 @@ public class AcousticPositioningActivity extends MenuActivity {
 			public void run() {
 				runOnUiThread(new Runnable() {
 					public void run() {
-						AcousticPositioningActivity.this.editTextMd5OfRecordedSamples
+						SandboxActivity.this.editTextMd5OfRecordedSamples
 								.setText("calculating digest ...");
 					}// run
 				});// runOnUiThread
 				try {
 					final Md5 md5 = new Md5();
-					md5.putBigEndian(AcousticPositioningActivity.this.recordedSamples);
+					md5.putBigEndian(SandboxActivity.this.recordedSamples);
 					runOnUiThread(new Runnable() {
 						public void run() {
-							AcousticPositioningActivity.this.editTextMd5OfRecordedSamples
+							SandboxActivity.this.editTextMd5OfRecordedSamples
 									.setText(md5.getMd5String());
 						}// run
 					});
