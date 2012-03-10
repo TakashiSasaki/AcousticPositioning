@@ -19,11 +19,13 @@ public class PlayerThread extends Thread {
 	private short[] samples;
 
 	public PlayerThread(short[] samples) {
+		if (samples == null)
+			throw new NullPointerException("no samples given to PlayerThread.");
 		this.samples = samples;
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLING_RATE,
 				AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, Math.max(minBufferSize * 4,
-						samples.length*2), AudioTrack.MODE_STATIC);
+						samples.length * 2), AudioTrack.MODE_STATIC);
 		this.enabled = true;
 		// somewhat, it is not called back;
 		this.audioTrack

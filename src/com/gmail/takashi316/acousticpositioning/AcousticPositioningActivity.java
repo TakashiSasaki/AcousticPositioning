@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import android.graphics.Color;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.view.View;
@@ -56,8 +57,13 @@ public class AcousticPositioningActivity extends MenuActivity {
 						if (recorderThread != null) {
 							recorderThread.stopRecording();
 							recorderThread = null;
+							arg0.setBackgroundColor(Color.GREEN);
+							return;
 						}
-						recorderThread = new RecorderThread(1000);
+						int recording_duration = Integer
+								.parseInt(editTextRecordingDuration.getText()
+										.toString());
+						recorderThread = new RecorderThread(recording_duration);
 						recorderThread
 								.setRunAfterRecordingCallback(new Runnable() {
 									public void run() {
@@ -66,6 +72,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 									}// run
 								});// setRunAfterRecordingCallback
 						recorderThread.start();
+						arg0.setBackgroundColor(Color.RED);
 					}// onClick
 				});// setOnClickListener
 
@@ -104,6 +111,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 						if (playerThread != null) {
 							playerThread.stopPlaying();
 							playerThread = null;
+							arg0.setBackgroundColor(Color.GREEN);
 							return;
 						}
 						if (recordedSamples == null) {
@@ -113,6 +121,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 						}
 						playerThread = new PlayerThread(recordedSamples);
 						playerThread.start();
+						arg0.setBackgroundColor(Color.RED);
 					}// onClick
 				});
 
@@ -122,6 +131,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 						if (playerThread != null) {
 							playerThread.stopPlaying();
 							playerThread = null;
+							arg0.setBackgroundColor(Color.GREEN);
 							return;
 						}
 						if (generatedSamples == null) {
@@ -131,6 +141,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 						}
 						playerThread = new PlayerThread(generatedSamples);
 						playerThread.start();
+						arg0.setBackgroundColor(Color.RED);
 					}// onClick
 				});
 

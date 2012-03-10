@@ -1,6 +1,5 @@
 package com.gmail.takashi316.acousticpositioning;
 
-import java.io.FileNotFoundException;
 import android.media.AudioRecord;
 
 public class RecorderThread extends Thread {
