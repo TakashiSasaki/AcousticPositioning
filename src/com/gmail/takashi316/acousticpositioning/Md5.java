@@ -8,13 +8,13 @@ public class Md5 {
 	private MessageDigest messageDigest;
 
 	public Md5() throws NoSuchAlgorithmException {
-		messageDigest = MessageDigest.getInstance("MD5");
-		messageDigest.reset();
+		this.messageDigest = MessageDigest.getInstance("MD5");
+		this.messageDigest.reset();
 	}// Md5
 
 	public String getMd5String() {
 		StringWriter sw = new StringWriter();
-		byte[] digest = messageDigest.digest();
+		byte[] digest = this.messageDigest.digest();
 		assert (digest.length == 16);
 		for (int i = 0; i < digest.length; ++i) {
 			String hex1digit = Integer.toHexString(digest[i] & 0xff);
@@ -50,14 +50,14 @@ public class Md5 {
 	public void putBigEndian(short[] data) {
 		for (int i = 0; i < data.length; ++i) {
 			byte[] tmp = getBigEndian(data[i]);
-			messageDigest.update(tmp);
+			this.messageDigest.update(tmp);
 		}
 	}
 
 	public void putLittleEndian(short[] data) {
 		for (int i = 0; i < data.length; ++i) {
 			byte[] tmp = getLittleEndian(data[i]);
-			messageDigest.update(tmp);
+			this.messageDigest.update(tmp);
 		}
 	}
 }

@@ -18,8 +18,8 @@ public class TextWriterThread extends WriterThread {
 	public void run() {
 		try {
 			BufferedWriter bw = getBufferedWriter();
-			for (int i = 0; i < samples.length; ++i) {
-				bw.write("" + samples[i] + "\r\n");
+			for (int i = 0; i < this.samples.length; ++i) {
+				bw.write("" + this.samples[i] + "\r\n");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

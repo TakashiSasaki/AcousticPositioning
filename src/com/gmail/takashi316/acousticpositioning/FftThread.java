@@ -15,46 +15,46 @@ public class FftThread extends Thread {
 
 	public FftThread(short[] input) {
 		this.size = input.length;
-		if (size % 2 == 1) {
+		if (this.size % 2 == 1) {
 			throw new IllegalArgumentException(
 					"size of input array should be even number.");
 		}
-		startDate = new Date();
-		fft = new DoubleFFT_1D(size);
-		workspace = new double[size * 2];
-		for (int i = 0; i < size; ++i) {
-			workspace[i] = (double) input[i];
+		this.startDate = new Date();
+		this.fft = new DoubleFFT_1D(this.size);
+		this.workspace = new double[this.size * 2];
+		for (int i = 0; i < this.size; ++i) {
+			this.workspace[i] = (double) input[i];
 		}// for
 	}// a constructor
 
 	@Override
 	public void run() {
-		fft.realForward(workspace);
-		endDate = new Date();
-		if (callback != null) {
-			callback.run();
+		this.fft.realForward(this.workspace);
+		this.endDate = new Date();
+		if (this.callback != null) {
+			this.callback.run();
 		}
 	}// run
 
 	public long getConsumedTime() {
-		return endDate.getTime() - startDate.getTime();
+		return this.endDate.getTime() - this.startDate.getTime();
 	}
 
 	public double[] getResult() {
-		return workspace;
+		return this.workspace;
 	}
 
 	public int getPeakIndex() {
 		// workspace[0] is is real because the input is real
 		int peak_index = 0;
-		double peak_value = workspace[0] * workspace[0];
-		if (workspace[1] * workspace[1] > peak_value) {
-			peak_index = size / 2;
+		double peak_value = this.workspace[0] * this.workspace[0];
+		if (this.workspace[1] * this.workspace[1] > peak_value) {
+			peak_index = this.size / 2;
 		}// if
 
-		for (int i = 1; i < size; ++i) {
-			final double real = workspace[i * 2];
-			final double imaginary = workspace[i * 2 + 1];
+		for (int i = 1; i < this.size; ++i) {
+			final double real = this.workspace[i * 2];
+			final double imaginary = this.workspace[i * 2 + 1];
 			final double power = real * real + imaginary * imaginary;
 			if (power > peak_value) {
 				peak_index = i;
@@ -65,7 +65,7 @@ public class FftThread extends Thread {
 	}// getPeakIndex
 
 	public double getPeakFrequency() {
-		return size / SAMPLING_RATE * getPeakIndex();
+		return this.size / SAMPLING_RATE * getPeakIndex();
 	}
 
 	public void setCallback(Runnable callback) {

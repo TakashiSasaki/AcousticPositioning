@@ -40,12 +40,13 @@ public class WriterThread extends Thread {
 
 	protected RandomAccessFile getRandomAccessFile()
 			throws FileNotFoundException {
-		RandomAccessFile raf = new RandomAccessFile(file, "rw");
+		RandomAccessFile raf = new RandomAccessFile(this.file, "rw");
 		return raf;
 	}
 
 	protected BufferedWriter getBufferedWriter() throws IOException {
-		File output_file = new File(dataDirectory, "" + date.getTime() + ".csv");
+		File output_file = new File(dataDirectory, "" + this.date.getTime()
+				+ ".csv");
 		if (output_file.exists())
 			throw new IOException(output_file.getAbsoluteFile()
 					+ " already exists.");
@@ -56,6 +57,6 @@ public class WriterThread extends Thread {
 	}
 
 	protected long getTime() {
-		return date.getTime();
+		return this.date.getTime();
 	}
 }// WriterThread

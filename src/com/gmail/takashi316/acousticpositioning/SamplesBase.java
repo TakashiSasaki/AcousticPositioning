@@ -7,10 +7,10 @@ public class SamplesBase {
 	protected byte[] byteBuffer;
 
 	public short[] getSamplesInShort() {
-		return shortBuffer;
+		return this.shortBuffer;
 	}// getSamplesInShort
 
 	public byte[] getSamplesInByte() {
-		return byteBuffer;
+		return this.byteBuffer;
 	}// getSamplesInByte
 }

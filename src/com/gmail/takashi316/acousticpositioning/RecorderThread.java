@@ -13,12 +13,12 @@ public class RecorderThread extends Thread {
 	private int nextBufferSize;
 
 	public RecorderThread(int recording_duration_in_millisecond, boolean continuously) {
-		audioRecord = new MyAudioRecord();
-		currentBuffer = new short[recording_duration_in_millisecond / 1000
+		this.audioRecord = new MyAudioRecord();
+		this.currentBuffer = new short[recording_duration_in_millisecond / 1000
 				* MyAudioRecord.SAMPLING_RATE];
-		currentBufferMarker = 0;
-		nextBufferSize = currentBuffer.length;
-		toBeContinued = continuously;
+		this.currentBufferMarker = 0;
+		this.nextBufferSize = this.currentBuffer.length;
+		this.toBeContinued = continuously;
 	}// a constructor
 
 	public void setRunAfterRecordingCallback(Runnable runnable) {
@@ -27,30 +27,30 @@ public class RecorderThread extends Thread {
 
 	@Override
 	public void run() {
-		audioRecord.startRecording();
+		this.audioRecord.startRecording();
 		while (true) {
-			if (currentBufferMarker >= currentBuffer.length) {
-				if (toBeContinued == false) {
-					previousBuffer = currentBuffer;
-					currentBuffer = null;
+			if (this.currentBufferMarker >= this.currentBuffer.length) {
+				if (this.toBeContinued == false) {
+					this.previousBuffer = this.currentBuffer;
+					this.currentBuffer = null;
 					break;
 				}
-				if (previousBuffer != null
-						&& previousBuffer.length == nextBufferSize) {
+				if (this.previousBuffer != null
+						&& this.previousBuffer.length == this.nextBufferSize) {
 					Log.v("recycling previous buffere");
 					swapPreviousAndCurrentBuffer();
 				} else {
 					Log.v("switching to next buffere");
-					previousBuffer = currentBuffer;
-					currentBuffer = new short[nextBufferSize];
+					this.previousBuffer = this.currentBuffer;
+					this.currentBuffer = new short[this.nextBufferSize];
 				}
-				currentBufferMarker = 0;
+				this.currentBufferMarker = 0;
 			}
-			if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
+			if (this.audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
 				Log.v("the state is not STATE_INITIALIZED.");
 				break;
 			}
-			if (audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+			if (this.audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
 				Log.v("the recording state is not RECORDSTATE_RECORDING.");
 				break;
 			}
@@ -61,9 +61,9 @@ public class RecorderThread extends Thread {
 				e.printStackTrace();
 			}// try
 			Log.v("reading from AudioRecord instance");
-			int read_frames = audioRecord.read(currentBuffer,
-					currentBufferMarker, currentBuffer.length
-							- currentBufferMarker);
+			int read_frames = this.audioRecord.read(this.currentBuffer,
+					this.currentBufferMarker, this.currentBuffer.length
+							- this.currentBufferMarker);
 			if (read_frames == AudioRecord.ERROR_INVALID_OPERATION) {
 				Log.v("ERROR_INVALID_OPERATION while reading from AudioRecord.");
 				break;
@@ -73,14 +73,14 @@ public class RecorderThread extends Thread {
 				break;
 			}
 			Log.v("" + read_frames + " frames read");
-			currentBufferMarker += read_frames;
+			this.currentBufferMarker += read_frames;
 		}// while
 
-		audioRecord.stop();
-		audioRecord.release();
+		this.audioRecord.stop();
+		this.audioRecord.release();
 		Log.v("finished recording thread");
-		if (runAfterRecordingCallback != null) {
-			runAfterRecordingCallback.run();
+		if (this.runAfterRecordingCallback != null) {
+			this.runAfterRecordingCallback.run();
 		}// if
 	}// run
 
@@ -97,19 +97,19 @@ public class RecorderThread extends Thread {
 	}// finalize
 
 	private void swapPreviousAndCurrentBuffer() {
-		short[] tmp = currentBuffer;
-		currentBuffer = previousBuffer;
-		previousBuffer = tmp;
+		short[] tmp = this.currentBuffer;
+		this.currentBuffer = this.previousBuffer;
+		this.previousBuffer = tmp;
 	}// swapPreviousAndCurrentBuffer
 
 	public short[] getPreviousBuffer() {
-		short[] tmp = previousBuffer;
-		previousBuffer = null;
+		short[] tmp = this.previousBuffer;
+		this.previousBuffer = null;
 		return tmp;
 	}// getRecordedFrames
 
 	public void setNextBufferSize(int next_buffer_size) {
-		nextBufferSize = next_buffer_size;
+		this.nextBufferSize = next_buffer_size;
 	}// setNextBufferSize
 
 }// RecorderThread

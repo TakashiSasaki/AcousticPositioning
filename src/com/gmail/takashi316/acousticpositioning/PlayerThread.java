@@ -21,8 +21,8 @@ public class PlayerThread extends Thread {
 		if (samples == null)
 			throw new NullPointerException("no samples given to PlayerThread.");
 		this.samples = samples;
-		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLING_RATE,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO,
+		this.audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+				SAMPLING_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, Math.max(minBufferSize * 4,
 						samples.length * 2), AudioTrack.MODE_STATIC);
 		this.enabled = true;
@@ -44,7 +44,7 @@ public class PlayerThread extends Thread {
 
 	@Override
 	public void run() {
-		while (enabled) {
+		while (this.enabled) {
 			this.audioTrack.play();
 			while (this.audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 				try {
@@ -55,8 +55,8 @@ public class PlayerThread extends Thread {
 					// this is an workaround because
 					// setPlaybackPositionUpdateListener doesn't work.
 				this.elapsed += MONITOR_PLAY_INTERVAL;
-				if (elapsed > samples.length / SAMPLING_RATE * 1000) {
-					elapsed = 0;
+				if (this.elapsed > this.samples.length / SAMPLING_RATE * 1000) {
+					this.elapsed = 0;
 					break;
 				}
 			}// while
@@ -71,13 +71,13 @@ public class PlayerThread extends Thread {
 	}// run
 
 	public void stopPlaying() {
-		enabled = false;
+		this.enabled = false;
 	}// stopPlaying
 
 	protected void finalize() {
-		if (audioTrack != null) {
-			audioTrack.stop();
-			audioTrack.release();
+		if (this.audioTrack != null) {
+			this.audioTrack.stop();
+			this.audioTrack.release();
 		}// if
 	}// finalize
 

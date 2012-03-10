@@ -26,10 +26,10 @@ public class CsvWriter extends WriterThread {
 			bw = getBufferedWriter();
 			double start_date = (double) getTime();
 			final double sampling_interval = 1000.0d / 48000.0d;
-			for (int i = start; i < start + length; ++i) {
+			for (int i = this.start; i < this.start + this.length; ++i) {
 				double offset_in_millisecond = sampling_interval * i;
 				double time = start_date + offset_in_millisecond;
-				bw.write("" + time + "," + samples[i] + "\r\n");
+				bw.write("" + time + "," + this.samples[i] + "\r\n");
 			}// for
 		} catch (IOException e) {
 			e.printStackTrace();

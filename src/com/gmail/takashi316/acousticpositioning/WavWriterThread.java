@@ -58,10 +58,10 @@ public class WavWriterThread extends WriterThread {
 			return;
 		}
 
-		byte[] byte_buffer = new byte[length * 2];
-		for (int i = start; i < start + length; ++i) {
-			byte_buffer[i * 2] = (byte) (samples[i] & 0xff);
-			byte_buffer[i * 2 + 1] = (byte) (samples[i] >>> 8);
+		byte[] byte_buffer = new byte[this.length * 2];
+		for (int i = this.start; i < this.start + this.length; ++i) {
+			byte_buffer[i * 2] = (byte) (this.samples[i] & 0xff);
+			byte_buffer[i * 2 + 1] = (byte) (this.samples[i] >>> 8);
 		}// for
 
 		try {

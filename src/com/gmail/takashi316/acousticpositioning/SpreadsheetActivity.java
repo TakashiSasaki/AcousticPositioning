@@ -34,25 +34,25 @@ import android.widget.EditText;
 public class SpreadsheetActivity extends MenuActivity {
 	final static private int START_ACTIVITY_FOR_RESULT_REQUEST_CODE = 0;
 	final static private int DIALOG_ACCOUNTS = 0;
-	private EditText editTextAuthToken;
+	EditText editTextAuthToken;
 	private Button buttonGetAuthToken;
-	private EditText editTextAccountType;
+	EditText editTextAccountType;
 	private Button buttonInvalidate;
 	private Button buttonRequestFeed;
-	private EditText editTextAccountName;
+	EditText editTextAccountName;
 
-	private String authToken;
-	private String accountType;
-	private String accountName;
+	String authToken;
+	String accountType;
+	String accountName;
 	private AccountManager accountManager;
 	private DocumentListFeed documentListFeed;
 
 	private final HttpTransport httpTransport = AndroidHttp
 			.newCompatibleTransport();
 
-	private void getAuthToken() {
-		accountManager = AccountManager.get(this);
-		Account[] accounts = accountManager.getAccountsByType("com.google");
+	void getAuthToken() {
+		this.accountManager = AccountManager.get(this);
+		Account[] accounts = this.accountManager.getAccountsByType("com.google");
 		if (accounts.length == 0) {
 			Log.v("no accounts in AccountManager");
 			return;
@@ -62,9 +62,9 @@ public class SpreadsheetActivity extends MenuActivity {
 			Log.v(account.name);
 		}// for
 
-		accountType = accounts[0].type;
-		accountName = accounts[0].name;
-		accountManager.getAuthToken(accounts[0], // テストなので固定
+		this.accountType = accounts[0].type;
+		this.accountName = accounts[0].name;
+		this.accountManager.getAuthToken(accounts[0], // テストなので固定
 				"writely", // ※1
 				null, this, new AccountManagerCallback<Bundle>() {
 					public void run(AccountManagerFuture<Bundle> arg0) {
@@ -82,7 +82,7 @@ public class SpreadsheetActivity extends MenuActivity {
 										START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
 								return;
 							} else {
-								authToken = bundle
+								SpreadsheetActivity.this.authToken = bundle
 										.getString(AccountManager.KEY_AUTHTOKEN);
 							}// if
 						} catch (OperationCanceledException e) {
@@ -94,9 +94,9 @@ public class SpreadsheetActivity extends MenuActivity {
 						}// try
 						runOnUiThread(new Runnable() {
 							public void run() {
-								editTextAuthToken.setText(authToken);
-								editTextAccountType.setText(accountType);
-								editTextAccountName.setText(accountName);
+								SpreadsheetActivity.this.editTextAuthToken.setText(SpreadsheetActivity.this.authToken);
+								SpreadsheetActivity.this.editTextAccountType.setText(SpreadsheetActivity.this.accountType);
+								SpreadsheetActivity.this.editTextAccountName.setText(SpreadsheetActivity.this.accountName);
 							}// run
 						});// runOnUiThread
 
@@ -104,14 +104,14 @@ public class SpreadsheetActivity extends MenuActivity {
 				}, null);// AccountManagerCallback
 	}// getAuthToken
 
-	private void invalidateAuthToken() {
+	void invalidateAuthToken() {
 		if (this.authToken == null) {
 			return;
 		}// if
-		accountManager.invalidateAuthToken(accountType, authToken);
-		accountType = null;
-		authToken = null;
-		accountName = null;
+		this.accountManager.invalidateAuthToken(this.accountType, this.authToken);
+		this.accountType = null;
+		this.authToken = null;
+		this.accountName = null;
 	}// invalidateAuthToken
 
 	final XmlNamespaceDictionary xml_name_space_dictionary = new XmlNamespaceDictionary()
@@ -129,27 +129,27 @@ public class SpreadsheetActivity extends MenuActivity {
 	// user defined http request initializer
 	HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
 		final GoogleAccessProtectedResource google_access_protected_resource = new GoogleAccessProtectedResource(
-				authToken);
+				SpreadsheetActivity.this.authToken);
 
 		public void initialize(HttpRequest request) throws IOException {
 			GoogleHeaders google_headers = new GoogleHeaders();
 			google_headers.setApplicationName("Google-DocsSample/1.0");
-			google_headers.setGoogleLogin(authToken);
+			google_headers.setGoogleLogin(SpreadsheetActivity.this.authToken);
 			google_headers.gdataVersion = "3";
 
 			request.setHeaders(google_headers);
 			request.setInterceptor(new HttpExecuteInterceptor() {
 				public void intercept(HttpRequest request) throws IOException {
-					method_override.intercept(request);
+					SpreadsheetActivity.this.method_override.intercept(request);
 					google_access_protected_resource.intercept(request);
 				}// intercept
 			});// HttpExecuteIntercept
-			request.addParser(new AtomParser(xml_name_space_dictionary));
-			request.setUnsuccessfulResponseHandler(google_access_protected_resource);
+			request.addParser(new AtomParser(SpreadsheetActivity.this.xml_name_space_dictionary));
+			request.setUnsuccessfulResponseHandler(this.google_access_protected_resource);
 		}// initialize
 	};
 
-	private void requestFeed() {
+	void requestFeed() {
 		GoogleUrl google_url = new GoogleUrl("https://docs.google.com/feeds");
 		google_url.getPathParts().add("default");
 		google_url.getPathParts().add("private");
@@ -158,8 +158,8 @@ public class SpreadsheetActivity extends MenuActivity {
 		// it works but use AndroidHttp.newCompatibleTransport instead.
 		// NetHttpTransport net_http_transport = new NetHttpTransport();
 
-		HttpRequestFactory http_request_factory = httpTransport
-				.createRequestFactory(httpRequestInitializer);
+		HttpRequestFactory http_request_factory = this.httpTransport
+				.createRequestFactory(this.httpRequestInitializer);
 
 		HttpRequest http_request;
 		try {
@@ -196,41 +196,41 @@ public class SpreadsheetActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.spreadsheet);
 
-		editTextAuthToken = (EditText) findViewById(R.id.editTextGetAuthToken);
-		buttonGetAuthToken = (Button) findViewById(R.id.buttonGetAuthToken);
-		editTextAccountType = (EditText) findViewById(R.id.editTextAccountType);
-		buttonInvalidate = (Button) findViewById(R.id.buttonInvalidate);
-		buttonRequestFeed = (Button) findViewById(R.id.buttonRequestFeed);
-		editTextAccountName = (EditText) findViewById(R.id.editTextAccountName);
+		this.editTextAuthToken = (EditText) findViewById(R.id.editTextGetAuthToken);
+		this.buttonGetAuthToken = (Button) findViewById(R.id.buttonGetAuthToken);
+		this.editTextAccountType = (EditText) findViewById(R.id.editTextAccountType);
+		this.buttonInvalidate = (Button) findViewById(R.id.buttonInvalidate);
+		this.buttonRequestFeed = (Button) findViewById(R.id.buttonRequestFeed);
+		this.editTextAccountName = (EditText) findViewById(R.id.editTextAccountName);
 
-		buttonGetAuthToken.setOnClickListener(new OnClickListener() {
+		this.buttonGetAuthToken.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				getAuthToken();
 			}// onClick
 		});// OnClickListener
 
-		buttonInvalidate.setOnClickListener(new OnClickListener() {
+		this.buttonInvalidate.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				invalidateAuthToken();
-				if (accountType == null) {
-					editTextAccountType.setText("null");
+				if (SpreadsheetActivity.this.accountType == null) {
+					SpreadsheetActivity.this.editTextAccountType.setText("null");
 				} else {
-					editTextAccountType.setText(accountType);
+					SpreadsheetActivity.this.editTextAccountType.setText(SpreadsheetActivity.this.accountType);
 				}// if
-				if (authToken == null) {
-					editTextAuthToken.setText("null");
+				if (SpreadsheetActivity.this.authToken == null) {
+					SpreadsheetActivity.this.editTextAuthToken.setText("null");
 				} else {
-					editTextAuthToken.setText(authToken);
+					SpreadsheetActivity.this.editTextAuthToken.setText(SpreadsheetActivity.this.authToken);
 				}// if
-				if (accountName == null) {
-					editTextAccountName.setText("null");
+				if (SpreadsheetActivity.this.accountName == null) {
+					SpreadsheetActivity.this.editTextAccountName.setText("null");
 				} else {
-					editTextAccountName.setText(accountName);
+					SpreadsheetActivity.this.editTextAccountName.setText(SpreadsheetActivity.this.accountName);
 				}// if
 			}// onClick
 		});// OnClickListener
 
-		buttonRequestFeed.setOnClickListener(new OnClickListener() {
+		this.buttonRequestFeed.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				requestFeed();
 			}// onClick
