@@ -50,9 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="recording duration in milliseconds"
             android:inputType="number"
-            android:text="10" 
-            android:hint="recording duration in milliseconds">
+            android:text="1000" >
 
             <requestFocus />
         </EditText>
@@ -125,6 +125,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="play" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/editTextPeakFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="peak frequency" />
+
+        <Button
+            android:id="@+id/buttonFftGeneratedSamples"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FFT Generated Samples" />
     </LinearLayout>
 
 </LinearLayout>

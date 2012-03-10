@@ -18,6 +18,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 	private EditText editTextRecordingDuration;
 	private EditText editTextMd5OfGeneratedSamples;
 	private EditText editTextMd5OfRecordedSamples;
+	private EditText editTextPeakFrequency;
 
 	private AudioTrack audioTrack;
 	// private Recorder recorder;
@@ -39,6 +40,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 		editTextRecordingDuration = (EditText) findViewById(R.id.editTextRecordingDuration);
 		editTextMd5OfGeneratedSamples = (EditText) findViewById(R.id.editTextMd5OfGeneratedSamples);
 		editTextMd5OfRecordedSamples = (EditText) findViewById(R.id.editTextMd5OfRecordedSamples);
+		editTextPeakFrequency = (EditText) findViewById(R.id.editTextPeakFrequency);
 
 		((Button) findViewById(R.id.buttonGenerateSine))
 				.setOnClickListener(new OnClickListener() {
@@ -190,6 +192,25 @@ public class AcousticPositioningActivity extends MenuActivity {
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						}
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonFftGeneratedSamples))
+				.setOnClickListener(new OnClickListener() {
+					public void onClick(View arg0) {
+						final FftThread fft_thread = new FftThread(
+								generatedSamples);
+						fft_thread.setCallback(new Runnable() {
+							public void run() {
+								runOnUiThread(new Runnable() {
+									public void run() {
+										editTextPeakFrequency.setText(""
+												+ fft_thread.getPeakFrequency());
+									}// run
+								});
+							}// run
+						});
+						fft_thread.start();
 					}// onClick
 				});
 
