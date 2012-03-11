@@ -64,8 +64,12 @@ public class FftThread extends Thread {
 		return peak_index;
 	}// getPeakIndex
 
-	public double getPeakFrequency() {
-		return this.size / SAMPLING_RATE * getPeakIndex();
+	public double getPeakFrequency(Double peak_power) {
+		final int peak_index = getPeakIndex();
+		if (peak_power != null) {
+			peak_power = workspace[peak_index];
+		}
+		return this.size / SAMPLING_RATE * peak_index;
 	}
 
 	public void setCallback(Runnable callback) {
