@@ -6,11 +6,12 @@ import android.os.Environment;
 
 public class DataDirectory {
 	private static File externalStorageDirectory;
-	protected static File dataDirectory;
+	private static File dataDirectory;
 	private static String DATA_DIRECTORY_NAME = "AcousticPositioning";
 
-	protected DataDirectory()
-			throws FileNotFoundException {
+	public DataDirectory() throws FileNotFoundException {
+		if (dataDirectory != null)
+			return;
 		externalStorageDirectory = Environment.getExternalStorageDirectory();
 		dataDirectory = new File(externalStorageDirectory, DATA_DIRECTORY_NAME);
 		if (!dataDirectory.exists()) {
@@ -21,5 +22,9 @@ public class DataDirectory {
 					+ dataDirectory.getAbsolutePath());
 		}// if
 	}// FileThread
-	
+
+	public File getFile(String file_name) {
+		return new File(dataDirectory, file_name);
+	}
+
 }// FileThread

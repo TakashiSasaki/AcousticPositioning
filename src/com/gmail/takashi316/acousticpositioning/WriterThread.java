@@ -8,28 +8,16 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Date;
 
-import android.os.Environment;
-
 public class WriterThread extends Thread {
-	public static File externalStorageDirectory;
-	public static File dataDirectory;
-	public static String DATA_DIRECTORY_NAME = "AcousticPositioning";
+	private static DataDirectory dataDirectory;
 	private Date date;
 	private File file;
 
 	protected WriterThread(Date date, String extension)
 			throws FileNotFoundException {
-		externalStorageDirectory = Environment.getExternalStorageDirectory();
-		dataDirectory = new File(externalStorageDirectory, DATA_DIRECTORY_NAME);
-		if (!dataDirectory.exists()) {
-			dataDirectory.mkdir();
-		}// if
-		if (!dataDirectory.exists() || !dataDirectory.isDirectory()) {
-			throw new FileNotFoundException("Can't create "
-					+ dataDirectory.getAbsolutePath());
-		}// if
-		this.file = new File(dataDirectory, "" + date.getTime() + "."
-				+ extension);
+		dataDirectory = new DataDirectory();
+		this.file = dataDirectory
+				.getFile("" + date.getTime() + "." + extension);
 		this.date = date;
 	}// WriterThread
 
@@ -45,7 +33,7 @@ public class WriterThread extends Thread {
 	}
 
 	protected BufferedWriter getBufferedWriter() throws IOException {
-		File output_file = new File(dataDirectory, "" + this.date.getTime()
+		File output_file = dataDirectory.getFile("" + this.date.getTime()
 				+ ".csv");
 		if (output_file.exists())
 			throw new IOException(output_file.getAbsoluteFile()
