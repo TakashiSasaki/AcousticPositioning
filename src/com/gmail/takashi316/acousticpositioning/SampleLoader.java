@@ -8,7 +8,7 @@ public class SampleLoader {
 	BufferedReader bufferedReader;
 
 	public SampleLoader(String file_name) throws IOException {
-		ReaderThread rt = new ReaderThread(file_name);
+		Reader rt = new Reader(file_name);
 		this.bufferedReader = rt.getBufferedReader();
 	}
 
@@ -36,4 +36,5 @@ public class SampleLoader {
 			++i;
 		}// while
 	}
+
 }

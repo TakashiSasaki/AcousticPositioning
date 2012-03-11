@@ -7,11 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class ReaderThread extends Thread {
+public class Reader {
 	private static DataDirectory dataDirectory;
 	private File file;
 
-	protected ReaderThread(String file_name) throws FileNotFoundException {
+	protected Reader(String file_name) throws FileNotFoundException {
 		dataDirectory = new DataDirectory();
 		this.file = dataDirectory.getFile(file_name);
 	}// WriterThread
