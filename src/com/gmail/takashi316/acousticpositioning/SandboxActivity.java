@@ -33,7 +33,7 @@ public class SandboxActivity extends MenuActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.sandbox);
 
 		this.editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
 		this.editTextSineSeconds = (EditText) findViewById(R.id.editTextSineSeconds);
@@ -58,8 +58,7 @@ public class SandboxActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						final Button button = (Button) arg0;
 						if (SandboxActivity.this.recorderThread != null) {
-							SandboxActivity.this.recorderThread
-									.stopRecording();
+							SandboxActivity.this.recorderThread.stopRecording();
 							SandboxActivity.this.recorderThread = null;
 							button.setBackgroundColor(Color.YELLOW);
 							button.setText("stopping");
@@ -98,10 +97,8 @@ public class SandboxActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						Thread thread;
 						try {
-							thread = new CsvWriter(
-									new Date(),
-									SandboxActivity.this.recordedSamples,
-									0,
+							thread = new CsvWriter(new Date(),
+									SandboxActivity.this.recordedSamples, 0,
 									SandboxActivity.this.recordedSamples.length);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -117,8 +114,7 @@ public class SandboxActivity extends MenuActivity {
 						Thread thread;
 						try {
 							thread = new WavWriterThread(
-									SandboxActivity.this.recordedSamples,
-									0,
+									SandboxActivity.this.recordedSamples, 0,
 									SandboxActivity.this.recordedSamples.length);
 							thread.start();
 						} catch (FileNotFoundException e) {
@@ -132,8 +128,7 @@ public class SandboxActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						final Button button = (Button) arg0;
 						if (SandboxActivity.this.playerThread != null) {
-							SandboxActivity.this.playerThread
-									.stopPlaying();
+							SandboxActivity.this.playerThread.stopPlaying();
 							SandboxActivity.this.playerThread = null;
 							button.setBackgroundColor(Color.GRAY);
 							button.setText("play");
@@ -161,8 +156,7 @@ public class SandboxActivity extends MenuActivity {
 					public void onClick(View arg0) {
 						Button button = (Button) arg0;
 						if (SandboxActivity.this.playerThread != null) {
-							SandboxActivity.this.playerThread
-									.stopPlaying();
+							SandboxActivity.this.playerThread.stopPlaying();
 							SandboxActivity.this.playerThread = null;
 							button.setBackgroundColor(Color.GRAY);
 							button.setText("play");
@@ -222,7 +216,8 @@ public class SandboxActivity extends MenuActivity {
 								runOnUiThread(new Runnable() {
 									public void run() {
 										SandboxActivity.this.editTextPeakFrequency.setText(""
-												+ fft_thread.getPeakFrequency());
+												+ fft_thread
+														.getPeakFrequency(null));
 									}// run
 								});
 							}// run
