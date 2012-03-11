@@ -38,10 +38,15 @@ public class ComplexNumber {
 		}
 		if (this.imaginary < 0.0d) {
 			return "" + this.real + "-" + Math.abs(this.imaginary) + "i" + "("
-					+ index + ")";
+					+ this.index + ")";
 		}
-		return "" + this.real + "+" + this.imaginary + "i" + "(" + index + ")";
+		return "" + this.real + "+" + this.imaginary + "i" + "(" + this.index
+				+ ")";
 	}// toString
+
+	public double getPower() {
+		return this.real * this.real + this.imaginary * this.imaginary;
+	}
 
 	public static void main(String[] args) {
 		ComplexNumber cn1 = new ComplexNumber("123.456");
@@ -67,12 +72,14 @@ public class ComplexNumber {
 
 		@Override
 		public int compare(ComplexNumber o1, ComplexNumber o2) {
-			final double power1 = o1.real * o1.real + o1.imaginary
-					* o1.imaginary;
-			assert (power1 >= 0);
-			final double power2 = o2.real * o2.real + o2.imaginary
-					* o2.imaginary;
-			assert (power2 >= 0);
+			// final double power1 = o1.real * o1.real + o1.imaginary
+			// * o1.imaginary;
+			// assert (power1 >= 0);
+			// final double power2 = o2.real * o2.real + o2.imaginary
+			// * o2.imaginary;
+			// assert (power2 >= 0);
+			final double power1 = o1.getPower();
+			final double power2 = o2.getPower();
 			int result;
 			if (power1 > power2) {
 				result = 1;

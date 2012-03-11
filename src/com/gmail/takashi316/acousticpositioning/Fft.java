@@ -100,8 +100,8 @@ public class Fft {
 		this.workspaceState = WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN;
 	}// doIfft
 
-	public ArrayList<ComplexNumber> getWorkspace() {
-		ArrayList<ComplexNumber> a = new ArrayList<ComplexNumber>(this.FFT_SIZE);
+	public ComplexArray getWorkspace() {
+		ComplexArray a = new ComplexArray(this.FFT_SIZE);
 		for (int i = 0; i < this.FFT_SIZE; ++i) {
 			final ComplexNumber c = new ComplexNumber(this.workspace[i * 2],
 					this.workspace[i * 2 + 1]);
@@ -111,10 +111,11 @@ public class Fft {
 		return a;
 	}// getWorkspace
 
-	public int getPeak() {
-		ArrayList<ComplexNumber> a = this.getWorkspace();
-		Collections.sort(a, new ComplexNumber.ComplexNumberComparator(true));
-		return a.get(0).index;
+	public ComplexNumber getPeak() {
+		ComplexArray ca = this.getWorkspace();
+		// ca.sortDesc();
+		// return ca.get(0);
+		return ca.get(ca.getPeak());
 	}// getPeak
 
 	public void loadFftCoefficients(String[] lines)
@@ -122,7 +123,7 @@ public class Fft {
 		// this method does not care that coefficients in the given file is
 		// ordered reversed or not;
 
-		ArrayList<ComplexNumber> excel_format = new ArrayList<ComplexNumber>();
+		ComplexArray excel_format = new ComplexArray();
 		for (String line : lines) {
 			ComplexNumber cn = new ComplexNumber(line);
 			excel_format.add(cn);
@@ -184,7 +185,7 @@ public class Fft {
 		System.out.println(new ComplexNumber(real_sum, imaginary_sum));
 	}
 
-	public void loadSamples(String lines[]) throws IOException {
+	public void loadWorkspace(String lines[]) throws IOException {
 		int i = 0;
 		for (String line : lines) {
 			this.workspace[i] = 0.0d;
@@ -201,25 +202,25 @@ public class Fft {
 	static public void main(String[] args) throws IOException {
 
 		Fft fft = new Fft(1024);
-		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadWorkspace(SampleSignal.SHIFT10_13);
 		fft.loadFftCoefficients(RevFft.REVFFT_1_LOW);
 		fft.doFft();
 		fft.multiply();
 		fft.doIfft();
 		System.out.println(fft.getPeak());
-		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadWorkspace(SampleSignal.SHIFT10_13);
 		fft.loadFftCoefficients(RevFft.REVFFT_1_HIGH);
 		fft.doFft();
 		fft.multiply();
 		fft.doIfft();
 		System.out.println(fft.getPeak());
-		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadWorkspace(SampleSignal.SHIFT10_13);
 		fft.loadFftCoefficients(RevFft.REVFFT_2_LOW);
 		fft.doFft();
 		fft.multiply();
 		fft.doIfft();
 		System.out.println(fft.getPeak());
-		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadWorkspace(SampleSignal.SHIFT10_13);
 		fft.loadFftCoefficients(RevFft.REVFFT_2_HIGH);
 		fft.doFft();
 		fft.multiply();
