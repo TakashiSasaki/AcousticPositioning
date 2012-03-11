@@ -25,9 +25,9 @@ public class Fft {
 		WORKSPACE_STATE_IS_UNKNOWN, WORKSPACE_STATE_IS_REAL_TIME_DOMAIN, WORKSPACE_STATE_IS_FREQUENCY_DOMAIN, WORKSPACE_STATE_IS_COMPLEX_TIME_DOMAIN
 	}
 
-	private WorkspaceState workspaceState = WorkspaceState.WORKSPACE_STATE_IS_UNKNOWN;
+	protected WorkspaceState workspaceState = WorkspaceState.WORKSPACE_STATE_IS_UNKNOWN;
 	private DoubleFFT_1D fft;
-	private double[] workspace;
+	protected double[] workspace;
 	protected double[] fftCoefficients;
 
 	public Fft() {
@@ -169,7 +169,7 @@ public class Fft {
 		if (this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN) {
 			double real_sum = 0;
 			for (int i = 0; i < this.FFT_SIZE; ++i) {
-				real_sum += workspace[i];
+				real_sum += this.workspace[i];
 			}
 			System.out.println(real_sum);
 		}
