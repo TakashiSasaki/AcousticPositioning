@@ -21,8 +21,8 @@ public class FftWithLoader extends Fft {
 			excel_format.add(cn);
 		}// while
 		if (excel_format.size() != this.FFT_SIZE) {
-			throw new RuntimeException(file_name + " doesn't have " + this.FFT_SIZE
-					+ " double values.");
+			throw new RuntimeException(file_name + " doesn't have "
+					+ this.FFT_SIZE + " double values.");
 		}// if
 		if (excel_format.get(0).imaginary != 0.0d) {
 			throw new RuntimeException("0th value in " + file_name
@@ -48,9 +48,9 @@ public class FftWithLoader extends Fft {
 			this.workspace[i] = Double.parseDouble(line);
 		}// while
 		if (i != this.FFT_SIZE) {
-			throw new RuntimeException(file_name + " doesn't have " + this.FFT_SIZE
-					+ " of double values. ");
+			throw new RuntimeException(file_name + " doesn't have "
+					+ this.FFT_SIZE + " of double values. ");
 		}// if
-		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN;
+		this.workspaceState = WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN;
 	}
 }

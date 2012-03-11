@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="guava-r09-gwt.jar"/>
 	<classpathentry kind="lib" path="guava-r09.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AcousticPositioningUtils"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
