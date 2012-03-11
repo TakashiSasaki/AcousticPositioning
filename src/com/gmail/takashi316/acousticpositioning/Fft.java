@@ -49,8 +49,8 @@ public class Fft {
 		if (max_amplitude == 0) {
 			return short_array;
 		}
-		for (int i = 0; i < FFT_SIZE; ++i) {
-			final double scaled = workspace[i * 2] / max_amplitude
+		for (int i = 0; i < this.FFT_SIZE; ++i) {
+			final double scaled = this.workspace[i * 2] / max_amplitude
 					* Short.MAX_VALUE;
 			short_array[i] = (short) scaled;
 		}// for
@@ -97,7 +97,7 @@ public class Fft {
 
 	public void doIfft() {
 		this.fft.complexInverse(this.workspace, true);
-		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_COMPLEX_TIME_DOMAIN;
+		this.workspaceState = WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN;
 	}// doIfft
 
 	public ArrayList<ComplexNumber> getWorkspace() {
