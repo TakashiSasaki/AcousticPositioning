@@ -8,7 +8,7 @@ public class ComplexNumber {
 	public int index;
 	public double real;
 	public double imaginary;
-	final static String COMPLEX_NUMBER_PATTERN = "([-+0-9.]+)[-+]([-0-9.]+)i";
+	final static String COMPLEX_NUMBER_PATTERN = "^([-+]?[0-9]+[.]?[0-9]*E?[+-]?[0-9]*)([-+][0-9]+[.]?[0-9]*E?[-+]?[0-9]*)i$";
 
 	public ComplexNumber(double real, double imaginary) {
 		this.real = real;
