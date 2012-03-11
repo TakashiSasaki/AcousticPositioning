@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/itemAcousticPositioning" android:title="AcousticPositioning"></item>
     <item android:id="@+id/itemSpreadsheet" android:title="Spreadsheet"></item>
+    <item android:id="@+id/itemSandbox" android:title="Sandbox"></item>
     
 
 </menu>
