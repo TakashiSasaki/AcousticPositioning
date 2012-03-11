@@ -1,6 +1,5 @@
 package com.gmail.takashi316.acousticpositioning;
 
-import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +47,7 @@ public class Fft {
 	}
 
 	public void doFft() {
-		this.fft.realForwardFull(this.workspace);
+		this.fft.complexForward(this.workspace);
 		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_FREQUENCY_DOMAIN;
 	}
 
@@ -179,7 +178,8 @@ public class Fft {
 	public void loadSamples(String lines[]) throws IOException {
 		int i = 0;
 		for (String line : lines) {
-			this.workspace[i] = Double.parseDouble(line);
+			this.workspace[i] = 0.0d;
+			this.workspace[i * 2] = Double.parseDouble(line);
 			++i;
 		}// while
 		if (i != this.FFT_SIZE) {
