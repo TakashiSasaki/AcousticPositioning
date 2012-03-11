@@ -1,9 +1,6 @@
 package com.gmail.takashi316.acousticpositioning;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class Fft {
@@ -30,32 +27,32 @@ public class Fft {
 	protected double[] workspace;
 	protected double[] fftCoefficients;
 
-	private double getMaxAmplitude() {
-		if (this.workspaceState != WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN) {
-			throw new RuntimeException("workspace state is not in time domain.");
-		}
-		double max_amp = 0.0d;
-		for (int i = 0; i < this.FFT_SIZE; ++i) {
-			if (max_amp < this.workspace[i * 2]) {
-				max_amp = this.workspace[i * 2];
-			}// if
-		}// for
-		return max_amp;
-	}// getMaxAmplitude
+	// private double getMaxAmplitude() {
+	// if (this.workspaceState != WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN) {
+	// throw new RuntimeException("workspace state is not in time domain.");
+	// }
+	// double max_amp = 0.0d;
+	// for (int i = 0; i < this.FFT_SIZE; ++i) {
+	// if (max_amp < this.workspace[i * 2]) {
+	// max_amp = this.workspace[i * 2];
+	// }// if
+	// }// for
+	// return max_amp;
+	// }// getMaxAmplitude
 
-	public short[] getShortArray() {
-		final double max_amplitude = getMaxAmplitude();
-		short[] short_array = new short[this.FFT_SIZE];
-		if (max_amplitude == 0) {
-			return short_array;
-		}
-		for (int i = 0; i < this.FFT_SIZE; ++i) {
-			final double scaled = this.workspace[i * 2] / max_amplitude
-					* Short.MAX_VALUE;
-			short_array[i] = (short) scaled;
-		}// for
-		return short_array;
-	}// getShortArray
+	// public short[] getShortArray() {
+	// final double max_amplitude = getMaxAmplitude();
+	// short[] short_array = new short[this.FFT_SIZE];
+	// if (max_amplitude == 0) {
+	// return short_array;
+	// }
+	// for (int i = 0; i < this.FFT_SIZE; ++i) {
+	// final double scaled = this.workspace[i * 2] / max_amplitude
+	// * Short.MAX_VALUE;
+	// short_array[i] = (short) scaled;
+	// }// for
+	// return short_array;
+	// }// getShortArray
 
 	public Fft() {
 		this.FFT_SIZE = 1024;
@@ -198,6 +195,19 @@ public class Fft {
 		}// if
 		this.workspaceState = WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN;
 	}// loadSamples
+
+	public void loadWorkspace(short[] short_array, int offset) {
+		ComplexArray ca = new ComplexArray(FFT_SIZE);
+		for (int i = 0; i < FFT_SIZE; ++i) {
+			ComplexNumber cn = new ComplexNumber(short_array[i + offset], 0);
+			ca.add(cn);
+		}// for
+		ca.normalize();
+		for (int i = 0; i < FFT_SIZE; ++i) {
+			this.workspace[i * 2] = ca.get(i).real;
+			this.workspace[i * 2 + 1] = ca.get(i).imaginary;
+		}// for
+	}// loadWorkSpace
 
 	static public void main(String[] args) throws IOException {
 

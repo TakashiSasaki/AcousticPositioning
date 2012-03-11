@@ -31,6 +31,11 @@ public class ComplexNumber {
 		}// try
 	}// ComplexNumber
 
+	public void div(double denominator) {
+		this.real /= denominator;
+		this.imaginary /= denominator;
+	}// div
+
 	@Override
 	public String toString() {
 		if (this.imaginary == 0.0d) {
@@ -94,5 +99,6 @@ public class ComplexNumber {
 				return result;
 			}
 		}// compare
+
 	}// ComplexNumberComparator
 }// ComplexNumber

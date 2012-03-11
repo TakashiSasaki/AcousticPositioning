@@ -1,6 +1,59 @@
 package com.gmail.takashi316.acousticpositioning;
 
+import java.io.IOException;
+
 public class Sequences {
+
+	public static final int SEQ_SIZE = 48000;
+	public static final int FFT_SIZE = 1024;
+	public static short[] seq1Low = new short[SEQ_SIZE];
+	public static short[] seq1High = new short[SEQ_SIZE];
+	public static short[] seq2Low = new short[SEQ_SIZE];
+	public static short[] seq2High = new short[SEQ_SIZE];
+	public static final int SEQ_PERIOD = 1023;
+
+	public Sequences() throws IOException {
+		Fft fft = new Fft(SEQUENCE_1_LOW.length);
+		fft.loadWorkspace(SEQUENCE_1_LOW);
+		ComplexArray ca = fft.getWorkspace();
+		paste(ca.getRealShortArrayNormalized(), seq1Low);
+		fft.loadWorkspace(SEQUENCE_1_HIGH);
+		ca = fft.getWorkspace();
+		paste(ca.getRealShortArrayNormalized(), seq1High);
+		fft.loadWorkspace(SEQUENCE_2_LOW);
+		ca = fft.getWorkspace();
+		paste(ca.getRealShortArrayNormalized(), seq2Low);
+		fft.loadWorkspace(SEQUENCE_2_HIGH);
+		ca = fft.getWorkspace();
+		paste(ca.getRealShortArrayNormalized(), seq2High);
+	}
+
+	static public void main(String[] args) throws IOException {
+		Sequences sequences = new Sequences();
+		Fft fft = new Fft(FFT_SIZE);
+		fft.loadWorkspace(seq1Low, 10);
+		fft.loadFftCoefficients(RevFft.REVFFT_1_LOW);
+		fft.doFft();
+		fft.multiply();
+		fft.doIfft();
+		System.out.println(fft.getPeak());
+	}
+
+	static private void paste(short[] src, short[] dest) {
+		int marker = 0;
+		while (true) {
+			final int paste_to_go = Math.min(dest.length - marker, SEQ_PERIOD);
+			if (paste_to_go <= 0)
+				break;
+			int i;
+			for (i = 0; i < paste_to_go; ++i) {
+				dest[i + marker] = src[i];
+			}// for
+			assert (i == paste_to_go);
+			marker += i;
+		}// while
+	}// paste
+
 	final static public String[] SEQUENCE_1_LOW = new String[] {
 			"-0.235550916828811", "0.527860957795534", "0.0415042303533555",
 			"-0.371190214294969", "-0.0456423295702852", "0.288986171512495",
