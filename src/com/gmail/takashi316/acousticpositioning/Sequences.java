@@ -8,35 +8,57 @@ public class Sequences {
 	public static final int FFT_SIZE = 1024;
 	public static short[] seq1Low = new short[SEQ_SIZE];
 	public static short[] seq1High = new short[SEQ_SIZE];
+	public static short[] seq1HighLow = new short[SEQ_SIZE];
 	public static short[] seq2Low = new short[SEQ_SIZE];
 	public static short[] seq2High = new short[SEQ_SIZE];
+	public static short[] seq2HighLow = new short[SEQ_SIZE];
 	public static final int SEQ_PERIOD = 1023;
 
-	public Sequences() throws IOException {
+	static final short HALF_MAX = (short) (Short.MAX_VALUE / 2);
+
+	static Sequences theInstance;
+
+	public static Sequences getInstance() {
+		if (theInstance == null) {
+			try {
+				theInstance = new Sequences();
+			} catch (IOException e) {
+				return null;
+			}
+		}
+		return theInstance;
+	}
+
+	private Sequences() throws IOException {
 		Fft fft = new Fft(SEQUENCE_1_LOW.length);
 		fft.loadWorkspace(SEQUENCE_1_LOW);
 		ComplexArray ca = fft.getWorkspace();
-		paste(ca.getRealShortArrayNormalized(), seq1Low);
+		paste(ca.getRealShortArray(HALF_MAX), seq1Low);
 		fft.loadWorkspace(SEQUENCE_1_HIGH);
 		ca = fft.getWorkspace();
-		paste(ca.getRealShortArrayNormalized(), seq1High);
+		paste(ca.getRealShortArray(HALF_MAX), seq1High);
 		fft.loadWorkspace(SEQUENCE_2_LOW);
 		ca = fft.getWorkspace();
-		paste(ca.getRealShortArrayNormalized(), seq2Low);
+		paste(ca.getRealShortArray(HALF_MAX), seq2Low);
 		fft.loadWorkspace(SEQUENCE_2_HIGH);
 		ca = fft.getWorkspace();
-		paste(ca.getRealShortArrayNormalized(), seq2High);
+		paste(ca.getRealShortArray(HALF_MAX), seq2High);
+		for (int i = 0; i < SEQ_SIZE; i++) {
+			seq1HighLow[i] = (short) (seq1High[i] + seq1Low[i]);
+			seq2HighLow[i] = (short) (seq2High[i] + seq2Low[i]);
+		}// for
 	}
 
 	static public void main(String[] args) throws IOException {
 		Sequences sequences = new Sequences();
 		Fft fft = new Fft(FFT_SIZE);
-		fft.loadWorkspace(seq1Low, 10);
-		fft.loadFftCoefficients(RevFft.REVFFT_1_LOW);
+		fft.loadWorkspace(seq1High, 1024);
+		fft.loadFftCoefficients(RevFft.REVFFT_1_HIGH);
 		fft.doFft();
 		fft.multiply();
 		fft.doIfft();
 		System.out.println(fft.getPeak());
+		System.out.println(Math.sqrt(fft.getWorkspace().getAveragePower()));
 	}
 
 	static private void paste(short[] src, short[] dest) {

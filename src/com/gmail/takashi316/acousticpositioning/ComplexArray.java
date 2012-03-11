@@ -35,13 +35,13 @@ public class ComplexArray extends ArrayList<ComplexNumber> {
 		return peak_index;
 	}// getPeak
 
-	public short[] getRealShortArrayNormalized() {
+	public short[] getRealShortArray(short max) {
 		short[] short_array = new short[this.size()];
 		final double peak_power = get(getPeak()).getPower();
 		final double denominator = Math.sqrt(peak_power);
 		for (int i = 0; i < this.size(); ++i) {
 			final double normalized_double = this.get(i).real / denominator
-					* Short.MAX_VALUE;
+					* max;
 			short_array[i] = (short) normalized_double;
 		}
 		return short_array;
@@ -53,4 +53,14 @@ public class ComplexArray extends ArrayList<ComplexNumber> {
 			this.get(i).div(denominator);
 		}// for
 	}// normalize
+
+	public double getAveragePower() {
+		double sum_power = 0.0;
+		// double sum_real = 0;
+		// double sum_imaginary = 0;
+		for (int i = 0; i < this.size(); ++i) {
+			sum_power += this.get(i).getPower();
+		}// for
+		return sum_power;
+	}// getAverage
 }
