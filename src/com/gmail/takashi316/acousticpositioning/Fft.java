@@ -22,13 +22,40 @@ public class Fft {
 	// the beginning of conjugate coefficients
 	// public static int EXCEL_FORMAT_CONJUGATE = 2049;
 	public enum WorkspaceState {
-		WORKSPACE_STATE_IS_UNKNOWN, WORKSPACE_STATE_IS_REAL_TIME_DOMAIN, WORKSPACE_STATE_IS_FREQUENCY_DOMAIN, WORKSPACE_STATE_IS_COMPLEX_TIME_DOMAIN
+		WORKSPACE_STATE_IS_UNKNOWN, WORKSPACE_STATE_FREQUENCY_DOMAIN, WORKSPACE_STATE_TIME_DOMAIN
 	}
 
 	protected WorkspaceState workspaceState = WorkspaceState.WORKSPACE_STATE_IS_UNKNOWN;
 	private DoubleFFT_1D fft;
 	protected double[] workspace;
 	protected double[] fftCoefficients;
+
+	private double getMaxAmplitude() {
+		if (this.workspaceState != WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN) {
+			throw new RuntimeException("workspace state is not in time domain.");
+		}
+		double max_amp = 0.0d;
+		for (int i = 0; i < this.FFT_SIZE; ++i) {
+			if (max_amp < this.workspace[i * 2]) {
+				max_amp = this.workspace[i * 2];
+			}// if
+		}// for
+		return max_amp;
+	}// getMaxAmplitude
+
+	public short[] getShortArray() {
+		final double max_amplitude = getMaxAmplitude();
+		short[] short_array = new short[this.FFT_SIZE];
+		if (max_amplitude == 0) {
+			return short_array;
+		}
+		for (int i = 0; i < FFT_SIZE; ++i) {
+			final double scaled = workspace[i * 2] / max_amplitude
+					* Short.MAX_VALUE;
+			short_array[i] = (short) scaled;
+		}// for
+		return short_array;
+	}// getShortArray
 
 	public Fft() {
 		this.FFT_SIZE = 1024;
@@ -48,11 +75,11 @@ public class Fft {
 
 	public void doFft() {
 		this.fft.complexForward(this.workspace);
-		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_FREQUENCY_DOMAIN;
+		this.workspaceState = WorkspaceState.WORKSPACE_STATE_FREQUENCY_DOMAIN;
 	}
 
 	public void multiply() {
-		if (this.workspaceState != WorkspaceState.WORKSPACE_STATE_IS_FREQUENCY_DOMAIN) {
+		if (this.workspaceState != WorkspaceState.WORKSPACE_STATE_FREQUENCY_DOMAIN) {
 			throw new RuntimeException(
 					"workspace state is not frequency domain.");
 		}
@@ -139,40 +166,22 @@ public class Fft {
 	}
 
 	public void printWorkspace() {
-		if (this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_FREQUENCY_DOMAIN
-				|| this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_COMPLEX_TIME_DOMAIN) {
-			for (int i = 0; i < this.FFT_SIZE; ++i) {
-				final double real = this.workspace[i * 2];
-				final double imaginary = this.workspace[i * 2 + 1];
-				ComplexNumber c = new ComplexNumber(real, imaginary);
-				System.out.println("" + i + "=" + c);
-			}
-		}
-		if (this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN) {
-			for (int i = 0; i < this.FFT_SIZE; ++i) {
-				System.out.println("" + i + "=" + this.workspace[i]);
-			}
+		for (int i = 0; i < this.FFT_SIZE; ++i) {
+			final double real = this.workspace[i * 2];
+			final double imaginary = this.workspace[i * 2 + 1];
+			ComplexNumber c = new ComplexNumber(real, imaginary);
+			System.out.println("" + i + "=" + c);
 		}
 	}
 
 	public void printWorkspaceSum() {
-		if (this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_FREQUENCY_DOMAIN
-				|| this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_COMPLEX_TIME_DOMAIN) {
-			double real_sum = 0;
-			double imaginary_sum = 0;
-			for (int i = 0; i < this.FFT_SIZE; ++i) {
-				real_sum += this.workspace[i * 2];
-				imaginary_sum += this.workspace[i * 2 + 1];
-			}
-			System.out.println(new ComplexNumber(real_sum, imaginary_sum));
+		double real_sum = 0;
+		double imaginary_sum = 0;
+		for (int i = 0; i < this.FFT_SIZE; ++i) {
+			real_sum += this.workspace[i * 2];
+			imaginary_sum += this.workspace[i * 2 + 1];
 		}
-		if (this.workspaceState == WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN) {
-			double real_sum = 0;
-			for (int i = 0; i < this.FFT_SIZE; ++i) {
-				real_sum += this.workspace[i];
-			}
-			System.out.println(real_sum);
-		}
+		System.out.println(new ComplexNumber(real_sum, imaginary_sum));
 	}
 
 	public void loadSamples(String lines[]) throws IOException {
@@ -186,7 +195,7 @@ public class Fft {
 			throw new RuntimeException("given string array doesn't have "
 					+ this.FFT_SIZE + " of double values. ");
 		}// if
-		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN;
+		this.workspaceState = WorkspaceState.WORKSPACE_STATE_TIME_DOMAIN;
 	}// loadSamples
 
 	static public void main(String[] args) throws IOException {
