@@ -1,5 +1,6 @@
 package com.gmail.takashi316.acousticpositioning;
 
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -188,34 +189,32 @@ public class Fft {
 		this.workspaceState = WorkspaceState.WORKSPACE_STATE_IS_REAL_TIME_DOMAIN;
 	}// loadSamples
 
-	static public void main(String[] args) {
+	static public void main(String[] args) throws IOException {
 
-		Fft fft = new Fft(4096);
-		try {
-			fft.loadSamples(SampleSignal.SAMPLE_SIGNAL);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			fft.loadFftCoefficients(SampleRevFft2.SAMPLE_REVFFT2);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		fft.printFftCoefficientsSum();
-		// fft.printWorkspace();
+		Fft fft = new Fft(1024);
+		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadFftCoefficients(RevFft.REVFFT_1_LOW);
 		fft.doFft();
-		// fft.printWorkspaceSum();
-		// fft.printWorkspace();
-		// fft.printFftCoefficients();
 		fft.multiply();
-		// fft.printWorkspace();
 		fft.doIfft();
-		// fft.printWorkspace();
-		System.out.println("peak = " + fft.getPeak());
-		System.out.println("finished");
-		ComplexNumber cn = new ComplexNumber("-2");
-		System.out.println(cn);
+		System.out.println(fft.getPeak());
+		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadFftCoefficients(RevFft.REVFFT_1_HIGH);
+		fft.doFft();
+		fft.multiply();
+		fft.doIfft();
+		System.out.println(fft.getPeak());
+		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadFftCoefficients(RevFft.REVFFT_2_LOW);
+		fft.doFft();
+		fft.multiply();
+		fft.doIfft();
+		System.out.println(fft.getPeak());
+		fft.loadSamples(SampleSignal.SHIFT10_13);
+		fft.loadFftCoefficients(RevFft.REVFFT_2_HIGH);
+		fft.doFft();
+		fft.multiply();
+		fft.doIfft();
+		System.out.println(fft.getPeak());
 	}// main
 }// Fft
