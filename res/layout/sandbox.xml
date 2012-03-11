@@ -139,6 +139,13 @@
             android:layout_weight="1"
             android:hint="peak frequency" />
 
+        <EditText
+            android:id="@+id/editTextPeakPower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="peak power"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/buttonFftGeneratedSamples"
             android:layout_width="wrap_content"

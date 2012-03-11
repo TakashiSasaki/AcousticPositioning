@@ -26,13 +26,19 @@ public class MenuActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.itemAcousticPositioning) {
 			Intent intent = new Intent();
-			intent.setClass(this, SandboxActivity.class);
+			intent.setClass(this, AcousticPositioningActivity.class);
 			startActivity(intent);
 			return true;
 		}
 		if (item.getItemId() == R.id.itemSpreadsheet) {
 			Intent intent = new Intent();
 			intent.setClass(this, SpreadsheetActivity.class);
+			startActivity(intent);
+			return true;
+		}
+		if (item.getItemId() == R.id.itemSandbox) {
+			Intent intent = new Intent();
+			intent.setClass(this, SandboxActivity.class);
 			startActivity(intent);
 			return true;
 		}
