@@ -150,7 +150,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							AcousticPositioningActivity.this.playerThread = null;
 							return;
 						}// if
-						SineSamples sine_samples = new SineSamples(1234, 1);
+						SineSamples sine_samples = new SineSamples(1234, 10);
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(sine_samples
 								.getInShort());
 						AcousticPositioningActivity.this.playerThread.start();

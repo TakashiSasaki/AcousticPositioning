@@ -1,5 +1,6 @@
 package com.gmail.takashi316.acousticpositioning;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class DetectingThread extends Thread {
@@ -32,6 +33,18 @@ public class DetectingThread extends Thread {
 		this.fft2Low.loadFftCoefficients(RevFft.REVFFT_2_LOW);
 		this.fft2High.loadFftCoefficients(RevFft.REVFFT_2_HIGH);
 		this.enabled = true;
+
+		// test
+		fft1Low.loadWorkspace(SampleSignal.SHIFT10_13);
+		fft1Low.doFft();
+		fft1Low.multiply();
+		fft1Low.doIfft();
+		Log.v("SampleSignal.SIFT10_13 and REVFFT_1_LOW results in "
+				+ fft1Low.getPeak());
+		
+		fft1Low.loadWorkspace(Sequences.getInstance().seqSine12000, 0);
+		fft1Low.doFft();
+		Log.v("seqSine12000 has frequency peak at "+fft1Low.getPeak());
 	}
 
 	public void setCallback(Runnable callback) {
@@ -58,6 +71,13 @@ public class DetectingThread extends Thread {
 		}
 		while (this.enabled) {
 			short[] samples = this.recorderThread.getPreviousBuffer();
+			TextWriterThread twt;
+			try {
+				twt = new TextWriterThread(samples);
+				twt.run();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
 			if (samples == null) {
 				try {
 					Thread.sleep(50);

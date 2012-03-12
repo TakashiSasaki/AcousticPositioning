@@ -33,13 +33,13 @@ public class WriterThread extends Thread {
 	}
 
 	protected BufferedWriter getBufferedWriter() throws IOException {
-		File output_file = dataDirectory.getFile("" + this.date.getTime()
-				+ ".csv");
-		if (output_file.exists())
-			throw new IOException(output_file.getAbsoluteFile()
+		//File output_file = dataDirectory.getFile("" + this.date.getTime()
+		//		+ ".csv");
+		if (file.exists())
+			throw new IOException(file.getAbsoluteFile()
 					+ " already exists.");
-		Log.d("writing to " + output_file.getAbsolutePath());
-		FileWriter fw = new FileWriter(output_file);
+		Log.d("writing to " + file.getAbsolutePath());
+		FileWriter fw = new FileWriter(file);
 		BufferedWriter bw = new BufferedWriter(fw);
 		return bw;
 	}

@@ -21,6 +21,8 @@ public class TextWriterThread extends WriterThread {
 			for (int i = 0; i < this.samples.length; ++i) {
 				bw.write("" + this.samples[i] + "\r\n");
 			}
+			bw.flush();
+			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
