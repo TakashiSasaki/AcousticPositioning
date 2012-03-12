@@ -61,7 +61,7 @@
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1" >
 
         <EditText
@@ -92,6 +92,91 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Seq2 High Peak" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/editTextPeakPower1Low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Peak Power 1 low" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/editTextPeakPower1High"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Peak Power 1 High" />
+
+        <EditText
+            android:id="@+id/editTextPeakPower2Low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Peak Power 2 Low" />
+
+        <EditText
+            android:id="@+id/editTextPeakPower2High"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Peak Power 2 High" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/editTextAveragePower1Low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Average Power 1 Low" />
+
+        <EditText
+            android:id="@+id/editTextAveragePower1High"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Average Power 1 High" />
+
+        <EditText
+            android:id="@+id/editTextAveragePower2Low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Average Power 2 Low" />
+
+        <EditText
+            android:id="@+id/editTextAveragePower2High"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Average Powre 2 High" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/buttonDetect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Detect Peaks" />
     </LinearLayout>
 
 </LinearLayout>

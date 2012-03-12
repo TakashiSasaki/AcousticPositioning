@@ -12,7 +12,8 @@ public class RecorderThread extends Thread {
 	private boolean toBeContinued;
 	private int nextBufferSize;
 
-	public RecorderThread(int recording_duration_in_millisecond, boolean continuously) {
+	public RecorderThread(int recording_duration_in_millisecond,
+			boolean continuously) throws IllegalStateException {
 		this.audioRecord = new MyAudioRecord();
 		this.currentBuffer = new short[recording_duration_in_millisecond / 1000
 				* MyAudioRecord.SAMPLING_RATE];
@@ -39,10 +40,10 @@ public class RecorderThread extends Thread {
 						&& this.previousBuffer.length == this.nextBufferSize) {
 					Log.v("recycling previous buffere");
 					swapPreviousAndCurrentBuffer();
-				} else {
+				}
+				if (this.currentBuffer == null) {
 					Log.v("switching to next buffere");
-					this.previousBuffer = this.currentBuffer;
-					this.currentBuffer = new short[this.nextBufferSize];
+					allocateCurrentBuffer();
 				}
 				this.currentBufferMarker = 0;
 			}
@@ -55,7 +56,7 @@ public class RecorderThread extends Thread {
 				break;
 			}
 			try {
-				Log.v("sleeping ...");
+				// Log.v("sleeping ...");
 				Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -96,17 +97,22 @@ public class RecorderThread extends Thread {
 		super.finalize();
 	}// finalize
 
-	private void swapPreviousAndCurrentBuffer() {
+	synchronized private void swapPreviousAndCurrentBuffer() {
 		short[] tmp = this.currentBuffer;
 		this.currentBuffer = this.previousBuffer;
 		this.previousBuffer = tmp;
 	}// swapPreviousAndCurrentBuffer
 
-	public short[] getPreviousBuffer() {
+	synchronized public short[] getPreviousBuffer() {
 		short[] tmp = this.previousBuffer;
 		this.previousBuffer = null;
 		return tmp;
 	}// getRecordedFrames
+
+	synchronized private void allocateCurrentBuffer() {
+		this.previousBuffer = this.currentBuffer;
+		this.currentBuffer = new short[this.nextBufferSize];
+	}// allocateCurrentBuffer
 
 	public void setNextBufferSize(int next_buffer_size) {
 		this.nextBufferSize = next_buffer_size;
