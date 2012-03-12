@@ -44,18 +44,32 @@
             android:text="Seq2 High+Low" />
 
         <Button
-            android:id="@+id/buttonSeq2Low"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Seq2 High" />
-
-        <Button
             android:id="@+id/buttonSeq2High"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Seq2 Low" />
+
+        <Button
+            android:id="@+id/buttonSeq2Low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Seq2 High" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/buttonSine1234"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sine 1234kHz"
+ />
+
     </LinearLayout>
 
     <LinearLayout
@@ -164,6 +178,25 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Average Powre 2 High" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/editTextPeakFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="peak freq." />
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout

@@ -36,16 +36,7 @@ public class RecorderThread extends Thread {
 					this.currentBuffer = null;
 					break;
 				}
-				if (this.previousBuffer != null
-						&& this.previousBuffer.length == this.nextBufferSize) {
-					Log.v("recycling previous buffere");
-					swapPreviousAndCurrentBuffer();
-				}
-				if (this.currentBuffer == null) {
-					Log.v("switching to next buffere");
-					allocateCurrentBuffer();
-				}
-				this.currentBufferMarker = 0;
+				renewCurrentBuffer();
 			}
 			if (this.audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
 				Log.v("the state is not STATE_INITIALIZED.");
@@ -85,6 +76,29 @@ public class RecorderThread extends Thread {
 		}// if
 	}// run
 
+	synchronized private void renewCurrentBuffer() {
+		if (this.previousBuffer == null) {
+			if (this.currentBuffer != null) {
+				previousBuffer = currentBuffer;
+				this.currentBuffer = new short[this.nextBufferSize];
+			} else {
+				this.currentBuffer = new short[this.nextBufferSize];
+			}
+		} else {
+			assert (currentBuffer != null);
+			if (this.previousBuffer.length == this.nextBufferSize) {
+				Log.v("recycling previous buffere");
+				short[] tmp = this.currentBuffer;
+				this.currentBuffer = this.previousBuffer;
+				this.previousBuffer = tmp;
+			} else {
+				this.previousBuffer = currentBuffer;
+				this.currentBuffer = new short[this.nextBufferSize];
+			}// if
+		}// if
+		this.currentBufferMarker = 0;
+	}// renewCurrentBuffer
+
 	public void stopRecording() {
 		this.toBeContinued = false;
 	}// stopRecording
@@ -97,22 +111,11 @@ public class RecorderThread extends Thread {
 		super.finalize();
 	}// finalize
 
-	synchronized private void swapPreviousAndCurrentBuffer() {
-		short[] tmp = this.currentBuffer;
-		this.currentBuffer = this.previousBuffer;
-		this.previousBuffer = tmp;
-	}// swapPreviousAndCurrentBuffer
-
 	synchronized public short[] getPreviousBuffer() {
 		short[] tmp = this.previousBuffer;
 		this.previousBuffer = null;
 		return tmp;
 	}// getRecordedFrames
-
-	synchronized private void allocateCurrentBuffer() {
-		this.previousBuffer = this.currentBuffer;
-		this.currentBuffer = new short[this.nextBufferSize];
-	}// allocateCurrentBuffer
 
 	public void setNextBufferSize(int next_buffer_size) {
 		this.nextBufferSize = next_buffer_size;

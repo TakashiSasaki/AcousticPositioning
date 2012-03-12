@@ -24,10 +24,11 @@ public class SineSamples {
 				this.shortBuffer[i] = this.shortBuffer[i
 						- PlayerThread.SAMPLING_RATE];
 			} else {
-				double t = (double) i
-						* (1.0d / (double) PlayerThread.SAMPLING_RATE);
-				double signal = Math.sin(2.0d * Math.PI
-						* (double) this.frequency * t) * 32767.0d;
+				double tick = (1.0d / (double) PlayerThread.SAMPLING_RATE);
+				double t = tick * (double) i;
+				double radian = 2.0d * Math.PI * (double) this.frequency * t;
+				double sine = Math.cos(radian);
+				double signal = sine * 32767.0d;
 				short short_signal = (short) signal;
 				this.shortBuffer[i] = short_signal;
 			}// if

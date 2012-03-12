@@ -11,8 +11,10 @@ public class DetectingThread extends Thread {
 	private Fft fft2High = new Fft(FFT_SIZE);
 	RecorderThread recorderThread;
 	public boolean enabled = true;
+	public boolean test = false;
 	private Runnable callback;
 
+	public ComplexNumber peakFrequency;
 	public ComplexNumber peak1Low;
 	public ComplexNumber peak1High;
 	public ComplexNumber peak2Low;
@@ -21,6 +23,7 @@ public class DetectingThread extends Thread {
 	public double peakAverage1High;
 	public double peakAverage2Low;
 	public double peakAverage2High;
+
 	public DetectingThread(RecorderThread recorder_thread)
 			throws NumberFormatException, IOException {
 		this.recorderThread = recorder_thread;
@@ -35,8 +38,24 @@ public class DetectingThread extends Thread {
 		this.callback = callback;
 	}
 
+	private void test() {
+		Log.v("DetectingThread#test");
+		Fft fft = new Fft(FFT_SIZE);
+		SineSamples sine_samples = new SineSamples(24000, 1);
+		fft.loadWorkspace(sine_samples.getInShort(), 0);
+		fft.doFft();
+		ComplexArray ca = fft.getWorkspace();
+		for (ComplexNumber cn : ca) {
+			Log.v(ca.toString());
+		}
+	}
+
 	@Override
 	public void run() {
+		if (this.test) {
+			test();
+			return;
+		}
 		while (this.enabled) {
 			short[] samples = this.recorderThread.getPreviousBuffer();
 			if (samples == null) {
@@ -49,35 +68,39 @@ public class DetectingThread extends Thread {
 			}// if
 			this.fft1Low.loadWorkspace(samples, 0);
 			this.fft1Low.doFft();
+			this.peakFrequency = this.fft1Low.getPeak();
+
 			this.fft1Low.multiply();
 			this.fft1Low.doIfft();
 			this.peak1Low = this.fft1Low.getPeak();
-			this.peakAverage1Low = this.fft1Low.getWorkspace().getAveragePower();
+			this.peakAverage1Low = this.fft1Low.getWorkspace()
+					.getAveragePower();
 			this.fft1Low.getWorkspace().getAveragePower();
-			
+
 			this.fft1High.loadWorkspace(samples, 0);
 			this.fft1High.doFft();
 			this.fft1High.multiply();
 			this.fft1High.doIfft();
 			this.peak1High = this.fft1High.getPeak();
-			this.peakAverage1High = this.fft1High.getWorkspace().getAveragePower();
+			this.peakAverage1High = this.fft1High.getWorkspace()
+					.getAveragePower();
 
-			
 			this.fft2Low.loadWorkspace(samples, 0);
 			this.fft2Low.doFft();
 			this.fft2Low.multiply();
 			this.fft2Low.doIfft();
 			this.peak2Low = this.fft2Low.getPeak();
-			this.peakAverage2Low = this.fft2Low.getWorkspace().getAveragePower();
+			this.peakAverage2Low = this.fft2Low.getWorkspace()
+					.getAveragePower();
 
 			this.fft2High.loadWorkspace(samples, 0);
 			this.fft2High.doFft();
 			this.fft2High.multiply();
 			this.fft2High.doIfft();
 			this.peak2High = this.fft2High.getPeak();
-			this.peakAverage2High = this.fft2High.getWorkspace().getAveragePower();
+			this.peakAverage2High = this.fft2High.getWorkspace()
+					.getAveragePower();
 
-			
 			if (this.callback != null) {
 				this.callback.run();
 			}
