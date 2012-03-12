@@ -13,11 +13,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 	EditText editTextSeq1HighPeak;
 	EditText editTextSeq2LowPeak;
 	EditText editTextSeq2HighPeak;
-
-	PlayerThread playerThread;
-	private Sequences sequences = Sequences.getInstance();
-	RecorderThread recorderThread;
-	DetectingThread detectingThread;
 	EditText editTextPeakPower1Low;
 	EditText editTextPeakPower1High;
 	EditText editTextPeakPower2Low;
@@ -27,6 +22,10 @@ public class AcousticPositioningActivity extends MenuActivity {
 	EditText editTextAveragePower2Low;
 	EditText editTextAveragePower2High;
 	EditText editTextPeakFrequency;
+
+	PlayerThread playerThread;
+	RecorderThread recorderThread;
+	DetectingThread detectingThread;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,7 +56,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								AcousticPositioningActivity.this.sequences.seq1Low);
+								Sequences.getInstance().getSeq1Low());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -73,7 +72,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								Sequences.seq1High);
+								Sequences.getInstance().getSeq1High());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -89,7 +88,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								Sequences.seq1HighLow);
+								Sequences.getInstance().getSeq1HighLow());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -105,7 +104,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								Sequences.seq2Low);
+								Sequences.getInstance().getSeq2Low());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -121,7 +120,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								Sequences.seq2High);
+								Sequences.getInstance().getSeq2High());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -137,7 +136,7 @@ public class AcousticPositioningActivity extends MenuActivity {
 							return;
 						}// if
 						AcousticPositioningActivity.this.playerThread = new PlayerThread(
-								Sequences.seq2HighLow);
+								Sequences.getInstance().getSeq2HighLow());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -146,13 +145,14 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
 						if (AcousticPositioningActivity.this.playerThread != null) {
-							AcousticPositioningActivity.this.playerThread.stopPlaying();
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
 							AcousticPositioningActivity.this.playerThread = null;
 							return;
 						}// if
 						SineSamples sine_samples = new SineSamples(1234, 10);
-						AcousticPositioningActivity.this.playerThread = new PlayerThread(sine_samples
-								.getInShort());
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								sine_samples.getInShort());
 						AcousticPositioningActivity.this.playerThread.start();
 					}// onClick
 				});
@@ -161,7 +161,6 @@ public class AcousticPositioningActivity extends MenuActivity {
 				.setOnClickListener(new OnClickListener() {
 
 					public void onClick(View arg0) {
-						final Button button = (Button) arg0;
 						if (AcousticPositioningActivity.this.recorderThread != null) {
 							AcousticPositioningActivity.this.recorderThread
 									.stopRecording();

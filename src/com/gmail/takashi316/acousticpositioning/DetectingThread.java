@@ -3,6 +3,8 @@ package com.gmail.takashi316.acousticpositioning;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.sound.midi.Sequence;
+
 public class DetectingThread extends Thread {
 
 	static final public int FFT_SIZE = 1024;
@@ -35,16 +37,18 @@ public class DetectingThread extends Thread {
 		this.enabled = true;
 
 		// test
-		fft1Low.loadWorkspace(SampleSignal.SHIFT10_13);
-		fft1Low.doFft();
-		fft1Low.multiply();
-		fft1Low.doIfft();
+		this.fft1Low.loadWorkspace(Sequences.SHIFT10to13);
+		this.fft1Low.doFft();
+		this.fft1Low.multiply();
+		this.fft1Low.doIfft();
 		Log.v("SampleSignal.SIFT10_13 and REVFFT_1_LOW results in "
-				+ fft1Low.getPeak());
-		
-		fft1Low.loadWorkspace(Sequences.getInstance().seqSine12000, 0);
-		fft1Low.doFft();
-		Log.v("seqSine12000 has frequency peak at "+fft1Low.getPeak());
+				+ this.fft1Low.getPeak());
+
+		Sequences.getInstance();
+		this.fft1Low
+				.loadWorkspace(Sequences.getInstance().getSeqSine12000(), 0);
+		this.fft1Low.doFft();
+		Log.v("seqSine12000 has frequency peak at " + this.fft1Low.getPeak());
 	}
 
 	public void setCallback(Runnable callback) {
