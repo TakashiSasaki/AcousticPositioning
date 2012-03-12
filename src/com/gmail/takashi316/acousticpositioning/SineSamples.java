@@ -1,9 +1,19 @@
 package com.gmail.takashi316.acousticpositioning;
 
-public class SineSamples extends SamplesBase {
+public class SineSamples {
 
+	private short[] shortBuffer;
+	private byte[] byteBuffer;
 	private int frequency;
 	private int seconds;
+
+	public short[] getInShort() {
+		return this.shortBuffer;
+	}// getSamplesInShort
+
+	public byte[] getInByte() {
+		return this.byteBuffer;
+	}// getSamplesInByte
 
 	public SineSamples(int frequency, int seconds) {
 		this.frequency = frequency;
@@ -11,7 +21,8 @@ public class SineSamples extends SamplesBase {
 		this.shortBuffer = new short[PlayerThread.SAMPLING_RATE * this.seconds];
 		for (int i = 0; i < this.shortBuffer.length; ++i) {
 			if (i > PlayerThread.SAMPLING_RATE) {
-				this.shortBuffer[i] = this.shortBuffer[i - PlayerThread.SAMPLING_RATE];
+				this.shortBuffer[i] = this.shortBuffer[i
+						- PlayerThread.SAMPLING_RATE];
 			} else {
 				double t = (double) i
 						* (1.0d / (double) PlayerThread.SAMPLING_RATE);
@@ -25,7 +36,8 @@ public class SineSamples extends SamplesBase {
 		this.byteBuffer = new byte[PlayerThread.SAMPLING_RATE * this.seconds];
 		for (int i = 0; i < this.byteBuffer.length; ++i) {
 			if (i > PlayerThread.SAMPLING_RATE) {
-				this.byteBuffer[i] = this.byteBuffer[i - PlayerThread.SAMPLING_RATE];
+				this.byteBuffer[i] = this.byteBuffer[i
+						- PlayerThread.SAMPLING_RATE];
 			} else {
 				double t = (double) i
 						* (1.0d / (double) PlayerThread.SAMPLING_RATE);

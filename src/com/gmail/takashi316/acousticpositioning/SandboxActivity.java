@@ -274,7 +274,7 @@ public class SandboxActivity extends MenuActivity {
 			this.audioTrack.release();
 		}// if
 		SineSamples sine_samples = new SineSamples(sine_hz, sine_seconds);
-		this.generatedSamples = sine_samples.getSamplesInShort();
+		this.generatedSamples = sine_samples.getInShort();
 		RefreshGeneratedSamplesMd5();
 	}// PlaySine
 

@@ -21,10 +21,10 @@ public class DataDirectory {
 			throw new FileNotFoundException("Can't create "
 					+ dataDirectory.getAbsolutePath());
 		}// if
-	}// FileThread
+	}// a constructor
 
-	public File getFile(String file_name) {
+	public static File getFile(String file_name) {
 		return new File(dataDirectory, file_name);
-	}
+	}// getFile
 
-}// FileThread
+}// DataDirectory
