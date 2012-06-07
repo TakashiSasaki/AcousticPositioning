@@ -1,11 +1,7 @@
 package com.gmail.takashi316.acousticpositioning;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 
-import android.media.AudioTrack;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,310 +9,259 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class AcousticPositioningActivity extends MenuActivity {
-	private EditText editTextSineHz;
-	private EditText editTextSineSeconds;
-	private EditText editTextRecordingDuration;
-	private EditText editTextMd5OfGeneratedSamples;
-	private EditText editTextMd5OfRecordedSamples;
+	EditText editTextSeq1LowPeak;
+	EditText editTextSeq1HighPeak;
+	EditText editTextSeq2LowPeak;
+	EditText editTextSeq2HighPeak;
+	EditText editTextPeakPower1Low;
+	EditText editTextPeakPower1High;
+	EditText editTextPeakPower2Low;
+	EditText editTextPeakPower2High;
+	EditText editTextAveragePower1low;
+	EditText editTextAveragePower1High;
+	EditText editTextAveragePower2Low;
+	EditText editTextAveragePower2High;
+	EditText editTextPeakFrequency;
 
-	private AudioTrack audioTrack;
-	private Recorder recorder;
+	PlayerThread playerThread;
+	RecorderThread recorderThread;
+	DetectingThread detectingThread;
 
-	private short[] recordedSamples;
-	private short[] generatedSamples;
-	private Date recordedDate;
-	private Date generatedDate;
-
-	volatile Thread md5CalculatingThread;
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.acousticpositioning);
 
-		editTextSineHz = (EditText) findViewById(R.id.editTextSineHz);
-		editTextSineSeconds = (EditText) findViewById(R.id.editTextSineSeconds);
-		editTextRecordingDuration = (EditText) findViewById(R.id.editTextRecordingDuration);
-		editTextMd5OfGeneratedSamples = (EditText) findViewById(R.id.editTextMd5OfGeneratedSamples);
-		editTextMd5OfRecordedSamples = (EditText) findViewById(R.id.editTextMd5OfRecordedSamples);
+		this.editTextSeq1LowPeak = (EditText) findViewById(R.id.editTextSeq1LowPeak);
+		this.editTextSeq1HighPeak = (EditText) findViewById(R.id.editTextSeq1HighPeak);
+		this.editTextSeq2LowPeak = (EditText) findViewById(R.id.editTextSeq2LowPeak);
+		this.editTextSeq2HighPeak = (EditText) findViewById(R.id.editTextSeq2HighPeak);
+		this.editTextPeakPower1Low = (EditText) findViewById(R.id.editTextPeakPower1Low);
+		this.editTextPeakPower1High = (EditText) findViewById(R.id.editTextPeakPower1High);
+		this.editTextPeakPower2Low = (EditText) findViewById(R.id.editTextPeakPower2Low);
+		this.editTextPeakPower2High = (EditText) findViewById(R.id.editTextPeakPower2High);
+		this.editTextAveragePower1low = (EditText) findViewById(R.id.editTextAveragePower1Low);
+		this.editTextAveragePower1High = (EditText) findViewById(R.id.editTextAveragePower1High);
+		this.editTextAveragePower2Low = (EditText) findViewById(R.id.editTextAveragePower2Low);
+		this.editTextAveragePower2High = (EditText) findViewById(R.id.editTextAveragePower2High);
+		this.editTextPeakFrequency = (EditText) findViewById(R.id.editTextPeakFrequency);
 
-		((Button) findViewById(R.id.buttonGenerateSine))
+		((Button) findViewById(R.id.buttonSeq1Low))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq1Low());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSeq1High))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq1High());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSeq1LowHigh))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq1HighLow());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSeq2Low))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq2Low());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSeq2High))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq2High());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSeq2LowHigh))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								Sequences.getInstance().getSeq2HighLow());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonSine1234))
 				.setOnClickListener(new OnClickListener() {
 					public void onClick(View arg0) {
-						try {
-							generateSine();
-						} catch (NoSuchAlgorithmException e) {
-							e.printStackTrace();
+						if (AcousticPositioningActivity.this.playerThread != null) {
+							AcousticPositioningActivity.this.playerThread
+									.stopPlaying();
+							AcousticPositioningActivity.this.playerThread = null;
+							return;
+						}// if
+						SineSamples sine_samples = new SineSamples(1234, 10);
+						AcousticPositioningActivity.this.playerThread = new PlayerThread(
+								sine_samples.getInShort());
+						AcousticPositioningActivity.this.playerThread.start();
+					}// onClick
+				});
+
+		((Button) findViewById(R.id.buttonDetect))
+				.setOnClickListener(new OnClickListener() {
+
+					public void onClick(View arg0) {
+						if (AcousticPositioningActivity.this.recorderThread != null) {
+							AcousticPositioningActivity.this.recorderThread
+									.stopRecording();
+							AcousticPositioningActivity.this.recorderThread = null;
+							AcousticPositioningActivity.this.detectingThread.enabled = false;
+							AcousticPositioningActivity.this.detectingThread = null;
+							return;
 						}
-					}
-				});
-
-		((Button) findViewById(R.id.buttonRecord))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
-						try {
-							doRecord();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
+						if (detectingThread != null) {
+							AcousticPositioningActivity.this.detectingThread.enabled = false;
+							AcousticPositioningActivity.this.detectingThread = null;
+							return;
 						}
-					}// onClick
-				});
-
-		((Button) findViewById(R.id.buttonSaveRecordedSamplesToCsv))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveRecordedSamplesToCsv();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}// run
-						});
-						thread.start();
-					}// onCick
-				});
-
-		((Button) findViewById(R.id.buttonSaveRecordedSamplesToWav))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveRecordedSamplesToWav();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						});
-						thread.start();
-					}// onClick
-				});
-
-		((Button) findViewById(R.id.buttonPlayRecordedSamples))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
 						try {
-							PlayRecordedSamples();
-						} catch (NullPointerException e) {
-						}// try
-					}// onClick
-				});
-
-		((Button) findViewById(R.id.buttonPlayGeneratedSamples))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
+							AcousticPositioningActivity.this.recorderThread = new RecorderThread(
+									1000, true);
+						} catch (IllegalStateException e) {
+							Log.v("Can't initialize RecorderThread");
+							return;
+						}
+						AcousticPositioningActivity.this.recorderThread
+								.setNextBufferSize(1024);
+						AcousticPositioningActivity.this.recorderThread.start();
 						try {
-							PlayGeneratedSamples();
-						} catch (NullPointerException e) {
+							AcousticPositioningActivity.this.detectingThread = new DetectingThread(
+									AcousticPositioningActivity.this.recorderThread);
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+							return;
+						} catch (IOException e) {
+							e.printStackTrace();
+							return;
 						}// try
-					}// onClick
-				});
+						AcousticPositioningActivity.this.detectingThread
+								.setCallback(new Runnable() {
 
-		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToCsv))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveGeneratedSamplesToCsv();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}// try
-							}// run
-						});
-						thread.start();
-					}// onClick
-				});
-
-		((Button) findViewById(R.id.buttonSaveGeneratedSamplesToWav))
-				.setOnClickListener(new OnClickListener() {
-					public void onClick(View arg0) {
-						Thread thread = new Thread(new Runnable() {
-							public void run() {
-								try {
-									saveGeneratedSamplesToWav();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}// try
-							}// run
-						});
-						thread.start();
+									public void run() {
+										if (AcousticPositioningActivity.this.detectingThread == null)
+											return;
+										runOnUiThread(new Runnable() {
+											public void run() {
+												if (AcousticPositioningActivity.this.detectingThread.peakFrequency != null) {
+													int peak_index = AcousticPositioningActivity.this.detectingThread.peakFrequency.index;
+													if (peak_index >= 512)
+														peak_index = 1024 - peak_index;
+													AcousticPositioningActivity.this.editTextPeakFrequency
+															.setText(""
+																	+ (48000d / 1024d * peak_index));
+												}
+												if (AcousticPositioningActivity.this.detectingThread.peak1Low != null) {
+													AcousticPositioningActivity.this.editTextSeq1LowPeak
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peak1Low.index);
+													AcousticPositioningActivity.this.editTextPeakPower1Low.setText(""
+															+ AcousticPositioningActivity.this.detectingThread.peak1Low
+																	.getPower());
+													AcousticPositioningActivity.this.editTextAveragePower1low
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peakAverage1Low);
+												}
+												if (AcousticPositioningActivity.this.detectingThread.peak1High != null) {
+													AcousticPositioningActivity.this.editTextSeq1HighPeak
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peak1High.index);
+													AcousticPositioningActivity.this.editTextPeakPower1High.setText(""
+															+ AcousticPositioningActivity.this.detectingThread.peak1High
+																	.getPower());
+													AcousticPositioningActivity.this.editTextAveragePower1High
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peakAverage1High);
+												}
+												if (AcousticPositioningActivity.this.detectingThread.peak2Low != null) {
+													AcousticPositioningActivity.this.editTextSeq2LowPeak
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peak2Low.index);
+													AcousticPositioningActivity.this.editTextPeakPower2Low.setText(""
+															+ AcousticPositioningActivity.this.detectingThread.peak2Low
+																	.getPower());
+													AcousticPositioningActivity.this.editTextAveragePower2Low
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peakAverage2Low);
+												}
+												if (AcousticPositioningActivity.this.detectingThread.peak2High != null) {
+													AcousticPositioningActivity.this.editTextSeq2HighPeak
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peak2High.index);
+													AcousticPositioningActivity.this.editTextPeakPower2High.setText(""
+															+ AcousticPositioningActivity.this.detectingThread.peak2High
+																	.getPower());
+													AcousticPositioningActivity.this.editTextAveragePower2High
+															.setText(""
+																	+ AcousticPositioningActivity.this.detectingThread.peakAverage2High);
+												}
+											}// run
+										});
+									}// run
+								});
+						AcousticPositioningActivity.this.detectingThread
+								.start();
 					}// onClick
 				});
 
 	}// onCreate
-
-	private void doRecord() throws FileNotFoundException {
-		if (recorder != null)
-			recorder.stopRecording();
-		recorder = new Recorder(new Runnable() {
-			public void run() {
-				recordedSamples = recorder.getRecordedFrames();
-				runOnUiThread(new Runnable() {
-					public void run() {
-						try {
-							RefreshRecordedSamplesMd5();
-						} catch (NoSuchAlgorithmException e) {
-							e.printStackTrace();
-						}// try
-					}// run
-				});
-			}// runOnUiThread
-		});// recorder
-		recordedDate = new Date();
-		editTextMd5OfRecordedSamples.setText("recording ...");
-		try {
-			recorder.startRecording();
-		} catch (IllegalStateException e) {
-			editTextMd5OfRecordedSamples.setText(e.getMessage());
-			recorder.stopRecording();
-		}
-	}// doRecord
-
-	private void saveRecordedSamplesToCsv() throws IOException {
-		Writer writer = new Writer(recordedDate);
-		writer.writeToCsv(recordedSamples);
-	}
-
-	private void saveRecordedSamplesToWav() throws IOException {
-		Writer writer = new Writer(recordedDate);
-		writer.writeToWav(recordedSamples);
-	}
-
-	private void saveGeneratedSamplesToCsv() throws IOException {
-		Writer writer = new Writer(generatedDate);
-		writer.writeToCsv(generatedSamples);
-	}
-
-	private void saveGeneratedSamplesToWav() throws IOException {
-		Writer writer = new Writer(generatedDate);
-		writer.writeToWav(generatedSamples);
-	}
-
-	private void generateSine() throws NoSuchAlgorithmException {
-		editTextMd5OfGeneratedSamples.setText("generating sine curve");
-		int sine_hz;
-		int sine_seconds;
-		try {
-			sine_hz = Integer.parseInt(editTextSineHz.getText().toString());
-			sine_seconds = Integer.parseInt(editTextSineSeconds.getText()
-					.toString());
-		} catch (Exception e) {
-			return;
-		}// try
-
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}// if
-		SineSamples sine_samples = new SineSamples(sine_hz, sine_seconds);
-		generatedSamples = sine_samples.getSamplesInShort();
-		generatedDate = new Date();
-		RefreshGeneratedSamplesMd5();
-	}// PlaySine
-
-	private void RefreshGeneratedSamplesMd5() throws NoSuchAlgorithmException {
-		if (md5CalculatingThread != null && md5CalculatingThread.isAlive()) {
-			editTextMd5OfGeneratedSamples.setText("digest calculator is busy");
-			return;
-		}// if
-		md5CalculatingThread = new Thread(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						editTextMd5OfGeneratedSamples
-								.setText("calculating digest ...");
-					}// run
-				});// runOnUiThread
-				try {
-					final Md5 md5;
-					md5 = new Md5();
-					md5.putBigEndian(generatedSamples);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							editTextMd5OfGeneratedSamples.setText(md5
-									.getMd5String());
-						}// run
-					});// runOnUiThread
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-				}// try
-			}// run
-		});// md5CalculationThread
-		md5CalculatingThread.start();
-	}// RefreshGeneratedSamplesMd5
-
-	private void RefreshRecordedSamplesMd5() throws NoSuchAlgorithmException {
-		if (md5CalculatingThread != null && md5CalculatingThread.isAlive()) {
-			editTextMd5OfGeneratedSamples.setText("digest calculator is busy");
-			return;
-		}// if
-		md5CalculatingThread = new Thread(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						editTextMd5OfRecordedSamples
-								.setText("calculating digest ...");
-					}// run
-				});// runOnUiThread
-				try {
-					final Md5 md5 = new Md5();
-					md5.putBigEndian(recordedSamples);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							editTextMd5OfRecordedSamples.setText(md5
-									.getMd5String());
-						}// run
-					});
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-				}// try
-			}// run
-		});// md5CalculationThread
-		md5CalculatingThread.start();
-	}// refreshRecordedSamplesMd5
-
-	private void PlayGeneratedSamples() throws NullPointerException {
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}
-		if (generatedSamples == null) {
-			throw new NullPointerException("generatedSamples is null");
-		}
-		audioTrack = new MyAudioTrack(generatedSamples);
-		audioTrack.play();
-	}// PlayBack
-
-	private void PlayRecordedSamples() throws NullPointerException {
-		if (audioTrack != null) {
-			if (audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-				audioTrack.stop();
-			}
-			audioTrack.release();
-		}
-		if (recordedSamples == null) {
-			throw new NullPointerException("recordedSamples is null");
-		}
-		audioTrack = new MyAudioTrack(recordedSamples);
-		audioTrack.play();
-	}// PlayBack
-
-	@Override
-	public void onStop() {
-		if (audioTrack != null) {
-			audioTrack.stop();
-			audioTrack.release();
-		}
-		if (recorder != null) {
-			recorder.stopRecording();
-		}
-		super.onStop();
-	}// onStop
-}// AcousticPositioningActivity
+}

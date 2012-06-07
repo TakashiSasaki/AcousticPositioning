@@ -36,6 +36,12 @@ public class MenuActivity extends Activity {
 			startActivity(intent);
 			return true;
 		}
+		if (item.getItemId() == R.id.itemSandbox) {
+			Intent intent = new Intent();
+			intent.setClass(this, SandboxActivity.class);
+			startActivity(intent);
+			return true;
+		}
 		return false;
 	}// onOptionsItemSelected
 }// MenuActivity

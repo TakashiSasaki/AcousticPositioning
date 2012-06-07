@@ -17,7 +17,7 @@ public class WhiteNoise {
 
 	public static void main(String[] args) {
 		SineSamples sine_samples = new SineSamples(1000, 1);
-		short[] short_array = sine_samples.getSamplesInShort();
+		short[] short_array = sine_samples.getInShort();
 		final int size = 32768;
 		double[] double_array = new double[size * 2];
 		for (int i = 0; i < size; ++i) {
