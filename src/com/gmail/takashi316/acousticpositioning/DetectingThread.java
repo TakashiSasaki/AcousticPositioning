@@ -3,8 +3,6 @@ package com.gmail.takashi316.acousticpositioning;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.sound.midi.Sequence;
-
 public class DetectingThread extends Thread {
 
 	static final public int FFT_SIZE = 1024;
@@ -12,7 +10,7 @@ public class DetectingThread extends Thread {
 	private Fft fft1High = new Fft(FFT_SIZE);
 	private Fft fft2Low = new Fft(FFT_SIZE);
 	private Fft fft2High = new Fft(FFT_SIZE);
-	RecorderThread recorderThread;
+	private RecorderThread recorderThread;
 	public boolean enabled = true;
 	public boolean test = false;
 	private Runnable callback;
@@ -49,7 +47,7 @@ public class DetectingThread extends Thread {
 				.loadWorkspace(Sequences.getInstance().getSeqSine12000(), 0);
 		this.fft1Low.doFft();
 		Log.v("seqSine12000 has frequency peak at " + this.fft1Low.getPeak());
-	}
+	}// a constructor
 
 	public void setCallback(Runnable callback) {
 		this.callback = callback;
@@ -75,13 +73,6 @@ public class DetectingThread extends Thread {
 		}
 		while (this.enabled) {
 			short[] samples = this.recorderThread.getPreviousBuffer();
-			TextWriterThread twt;
-			try {
-				twt = new TextWriterThread(samples);
-				twt.run();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
 			if (samples == null) {
 				try {
 					Thread.sleep(50);
@@ -90,9 +81,17 @@ public class DetectingThread extends Thread {
 					e.printStackTrace();
 				}
 			}// if
+			TextWriterThread twt;
+			try {
+				twt = new TextWriterThread(samples);
+				twt.run();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
 			this.fft1Low.loadWorkspace(samples, 0);
 			this.fft1Low.doFft();
-			this.peakFrequency = this.fft1Low.getPeak();
+			ComplexArray ca = this.fft1Low.getWorkspace();
+			this.peakFrequency = ca.get(ca.getPeak());
 
 			this.fft1Low.multiply();
 			this.fft1Low.doIfft();
@@ -128,6 +127,15 @@ public class DetectingThread extends Thread {
 			if (this.callback != null) {
 				this.callback.run();
 			}
-		}
+		}// while
 	}// run
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (this.recorderThread != null) {
+			this.recorderThread.stopRecording();
+			this.recorderThread = null;
+		}// if
+		super.finalize();
+	}// finalize
 }

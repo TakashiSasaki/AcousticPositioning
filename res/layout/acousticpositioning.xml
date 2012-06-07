@@ -44,14 +44,14 @@
             android:text="Seq2 High+Low" />
 
         <Button
-            android:id="@+id/buttonSeq2High"
+            android:id="@+id/buttonSeq2Low"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Seq2 Low" />
 
         <Button
-            android:id="@+id/buttonSeq2Low"
+            android:id="@+id/buttonSeq2High"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -184,6 +184,13 @@
         android:id="@+id/linearLayout7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="peak f" />
 
         <EditText
             android:id="@+id/editTextPeakFrequency"

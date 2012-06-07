@@ -169,6 +169,11 @@ public class AcousticPositioningActivity extends MenuActivity {
 							AcousticPositioningActivity.this.detectingThread = null;
 							return;
 						}
+						if (detectingThread != null) {
+							AcousticPositioningActivity.this.detectingThread.enabled = false;
+							AcousticPositioningActivity.this.detectingThread = null;
+							return;
+						}
 						try {
 							AcousticPositioningActivity.this.recorderThread = new RecorderThread(
 									1000, true);
@@ -198,9 +203,12 @@ public class AcousticPositioningActivity extends MenuActivity {
 										runOnUiThread(new Runnable() {
 											public void run() {
 												if (AcousticPositioningActivity.this.detectingThread.peakFrequency != null) {
+													int peak_index = AcousticPositioningActivity.this.detectingThread.peakFrequency.index;
+													if (peak_index >= 512)
+														peak_index = 1024 - peak_index;
 													AcousticPositioningActivity.this.editTextPeakFrequency
 															.setText(""
-																	+ AcousticPositioningActivity.this.detectingThread.peakFrequency);
+																	+ (48000d / 1024d * peak_index));
 												}
 												if (AcousticPositioningActivity.this.detectingThread.peak1Low != null) {
 													AcousticPositioningActivity.this.editTextSeq1LowPeak

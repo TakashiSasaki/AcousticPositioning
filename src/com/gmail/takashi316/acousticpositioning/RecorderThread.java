@@ -7,7 +7,7 @@ public class RecorderThread extends Thread {
 	private short[] currentBuffer;
 	private int currentBufferMarker;
 	private short[] previousBuffer;
-	final static private int TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS = 100;
+	final static private int TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS = 10;
 	private Runnable runAfterRecordingCallback;
 	private boolean toBeContinued;
 	private int nextBufferSize;
@@ -37,6 +37,7 @@ public class RecorderThread extends Thread {
 					break;
 				}
 				renewCurrentBuffer();
+				assert (currentBufferMarker == 0);
 			}
 			if (this.audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
 				Log.v("the state is not STATE_INITIALIZED.");
@@ -46,13 +47,7 @@ public class RecorderThread extends Thread {
 				Log.v("the recording state is not RECORDSTATE_RECORDING.");
 				break;
 			}
-			try {
-				// Log.v("sleeping ...");
-				Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}// try
-			Log.v("reading from AudioRecord instance");
+			// Log.v("reading from AudioRecord instance");
 			int read_frames = this.audioRecord.read(this.currentBuffer,
 					this.currentBufferMarker, this.currentBuffer.length
 							- this.currentBufferMarker);
@@ -64,7 +59,15 @@ public class RecorderThread extends Thread {
 				Log.v("ERROR_BAD_VALUE while reading from AudioRecord.");
 				break;
 			}
-			Log.v("" + read_frames + " frames read");
+			if (read_frames == 0) {
+				try {
+					Log.v("sleeping ...");
+					Thread.sleep(TIME_INTERVAL_TO_READ_FRAMES_IN_MILLISECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}// try
+			}
+			// Log.v("" + read_frames + " frames read");
 			this.currentBufferMarker += read_frames;
 		}// while
 
@@ -79,21 +82,27 @@ public class RecorderThread extends Thread {
 	synchronized private void renewCurrentBuffer() {
 		if (this.previousBuffer == null) {
 			if (this.currentBuffer != null) {
-				previousBuffer = currentBuffer;
+				this.previousBuffer = this.currentBuffer;
 				this.currentBuffer = new short[this.nextBufferSize];
+				assert (currentBuffer[0] == 0);
 			} else {
 				this.currentBuffer = new short[this.nextBufferSize];
+				assert (currentBuffer[0] == 0);
 			}
 		} else {
-			assert (currentBuffer != null);
+			assert (this.currentBuffer != null);
 			if (this.previousBuffer.length == this.nextBufferSize) {
-				Log.v("recycling previous buffere");
-				short[] tmp = this.currentBuffer;
-				this.currentBuffer = this.previousBuffer;
-				this.previousBuffer = tmp;
-			} else {
-				this.previousBuffer = currentBuffer;
+				// Log.v("recycling previous buffer");
+				// short[] tmp = this.currentBuffer;
+				// this.currentBuffer = this.previousBuffer;
+				// this.previousBuffer = tmp;
+				this.previousBuffer = this.currentBuffer;
 				this.currentBuffer = new short[this.nextBufferSize];
+				assert (currentBuffer[0] == 0);
+			} else {
+				this.previousBuffer = this.currentBuffer;
+				this.currentBuffer = new short[this.nextBufferSize];
+				assert (currentBuffer[0] == 0);
 			}// if
 		}// if
 		this.currentBufferMarker = 0;

@@ -46,7 +46,8 @@ public class PlayerThread extends Thread {
 	public void run() {
 		while (this.enabled) {
 			this.audioTrack.play();
-			while (this.audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+			while (this.audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING
+					&& this.enabled) {
 				try {
 					Thread.sleep(MONITOR_PLAY_INTERVAL);
 				} catch (InterruptedException e) {
